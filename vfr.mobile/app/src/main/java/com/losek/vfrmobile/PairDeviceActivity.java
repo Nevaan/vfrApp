@@ -4,21 +4,18 @@ import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class PairDeviceActivity extends ListActivity {
 
@@ -26,7 +23,6 @@ public class PairDeviceActivity extends ListActivity {
     private BluetoothAdapter mBluetoothAdapter;
 
     private List foundDevices = new ArrayList();
-    private Set foundDevicesSet = new HashSet();
     ArrayAdapter<BluetoothDevice> btDevicesAdapter;
 
     @Override
@@ -51,7 +47,7 @@ public class PairDeviceActivity extends ListActivity {
                     .setMessage("Your phone does not support Bluetooth")
                     .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            //System.exit(0);
+                            System.exit(0);
                         }
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -68,9 +64,7 @@ public class PairDeviceActivity extends ListActivity {
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
-            // your implementation here
             System.out.println("--== DEVICE FOUND ==--");
-
 
             if(!foundDevices.contains(device)) {
                 runOnUiThread(new Thread() {
