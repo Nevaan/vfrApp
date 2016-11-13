@@ -2,6 +2,7 @@ package com.losek.vfrmobile;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // BLE not supported
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) && !(Build.MODEL.equals("Android SDK built for x86"))) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
         }
