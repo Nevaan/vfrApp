@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BlueSTSDK/BlueSTSDK/BlueSTSDK-BlueSTSDK.iml" filepath="$PROJECT_DIR$/BlueSTSDK/BlueSTSDK/BlueSTSDK-BlueSTSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/vfr.mobile.iml" filepath="$PROJECT_DIR$/vfr.mobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BlueSTSDK/vfr.mobile-BlueSTSDK.iml" filepath="$PROJECT_DIR$/BlueSTSDK/vfr.mobile-BlueSTSDK.iml" />
     </modules>
   </component>
 </project>
