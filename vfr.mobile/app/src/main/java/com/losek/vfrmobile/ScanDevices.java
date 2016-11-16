@@ -7,6 +7,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
@@ -79,10 +80,15 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l) {
+
+        final Node selectedNode = devicesListAdapter.getItem(position);
+        if (selectedNode.isConnected()){
+            Toast.makeText(this, R.string.device_already_connected, Toast.LENGTH_LONG).show();
+            return;
+        }
         Thread getListItemThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Node selectedNode = devicesListAdapter.getItem(position);
                 System.out.println("Clicked Item: " + selectedNode.getTag());
                 Intent goBack = new Intent(ScanDevices.this, MainActivity.class);
                 VfrApplication appVariables = (VfrApplication) getApplication();
@@ -96,6 +102,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                     default:
                         System.out.println("Error! I dont know what tag to pair");
                 }
+                selectedNode.connect(getApplicationContext());
                 startActivity(goBack);
             }
         });

@@ -53,7 +53,11 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
             }
 
             if (tt2 != null) {
-                tt2.setText(p.getFriendlyName());
+                String name = p.getFriendlyName();
+                if(p.isConnected()){
+                    name = name.concat("(paired)");
+                }
+                tt2.setText(name);
             }
         }
 
