@@ -72,7 +72,8 @@
         android:id="@+id/pair_helmet_button"
         android:layout_below="@+id/helmet_tag"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp" />
+        android:layout_marginTop="15dp"
+        android:onClick="pairHelmetTag"/>
 
     <Button
         android:text="@string/start_button"
