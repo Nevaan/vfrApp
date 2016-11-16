@@ -1,6 +1,5 @@
 package com.losek.vfrmobile;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -10,12 +9,6 @@ import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-
-    private String cockpitTagDeviceName = "undefined";
-    private String helmetTagDeviceName = "undefined";
-
-    public static BluetoothDevice cockpitTag;
-    public static BluetoothDevice helmetTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

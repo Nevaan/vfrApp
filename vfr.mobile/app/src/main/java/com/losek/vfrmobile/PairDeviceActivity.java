@@ -4,19 +4,15 @@ import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +59,6 @@ public class PairDeviceActivity extends ListActivity {
             }
         }
 
-        IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        registerReceiver(mPairReceiver, intent);
-
     }
 
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
@@ -94,7 +87,6 @@ public class PairDeviceActivity extends ListActivity {
             @Override
             public void run() {
                 final Button searchDevicesButton = (Button) findViewById(R.id.search_devices_button);
-                foundDevices.clear();
                 mBluetoothAdapter.startLeScan(leScanCallback);
                 try {
                     runOnUiThread(new Thread() {
@@ -118,31 +110,8 @@ public class PairDeviceActivity extends ListActivity {
             }
         });
         thread.start();
+
+
     }
-
-    private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                final int state        = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                final int prevState    = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
-                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    showToast("Paired");
-                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED){
-                    showToast("Unpaired");
-                }
-
-            }
-        }
-    };
-
-    private void showToast(String msg) {
-        Toast toast = Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP| Gravity.LEFT, 0, 0);
-        toast.show();
-    }
-
 
 }
