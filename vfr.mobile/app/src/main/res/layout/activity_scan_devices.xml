@@ -10,4 +10,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.losek.vfrmobile.ScanDevices">
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/lookForDevices"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="34dp"
+        android:id="@+id/weSuNodesList" />
+
+    <Button
+        android:text="@string/scan_for_devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lookForDevices"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

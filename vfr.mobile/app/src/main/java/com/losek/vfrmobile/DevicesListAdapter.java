@@ -1,5 +1,6 @@
 package com.losek.vfrmobile;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,20 +9,25 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.st.BlueSTSDK.Manager;
+import com.st.BlueSTSDK.Node;
+
 import java.util.List;
 
 /**
  * Created by pawel on 13.11.2016.
  */
 
-public class DevicesListAdapter extends ArrayAdapter<BluetoothDevice> {
+public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.ManagerListener {
+
+    private Activity mActivity;
 
     public DevicesListAdapter(Context ctx, int textViewResourceId) {
-        super(ctx,textViewResourceId);
+        super(ctx, textViewResourceId);
     }
 
-    public DevicesListAdapter(Context ctx, int resource, List<BluetoothDevice> items) {
-        super(ctx,resource,items);
+    public DevicesListAdapter(Context ctx, int resource, List<Node> items) {
+        super(ctx, resource, items);
     }
 
     @Override
@@ -35,17 +41,37 @@ public class DevicesListAdapter extends ArrayAdapter<BluetoothDevice> {
             v = vi.inflate(R.layout.bt_devices_list, null);
         }
 
-        BluetoothDevice p = getItem(position);
+        Node p = getItem(position);
 
         if (p != null) {
 
-            TextView tt1 = (TextView) v.findViewById(R.id.btDevicesRow);
+            TextView tt1 = (TextView) v.findViewById(R.id.deviceName);
+            TextView tt2 = (TextView) v.findViewById(R.id.deviceAddress);
 
             if (tt1 != null) {
-                tt1.setText(p.getAddress());
+                tt1.setText(p.getName());
+            }
+
+            if (tt2 != null) {
+                tt2.setText(p.getFriendlyName());
             }
         }
 
         return v;
+    }
+
+    @Override
+    public void onDiscoveryChange(Manager m, boolean enabled) {
+
+    }
+
+    @Override
+    public void onNodeDiscovered(Manager m, final Node node) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                add(node);
+            }//run
+        });
     }
 }

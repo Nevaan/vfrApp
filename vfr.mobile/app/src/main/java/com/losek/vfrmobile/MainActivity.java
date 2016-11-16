@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void pairCockpitTag(View view) {
-        Intent intent = new Intent(this, PairDeviceActivity.class);
+        Intent intent = new Intent(this, ScanDevices.class);
         startActivity(intent);
     }
 }
