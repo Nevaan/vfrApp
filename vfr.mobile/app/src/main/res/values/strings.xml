@@ -9,6 +9,13 @@
     <string name="ble_not_supported">Low Energy Bluetooth is not available on this device</string>
     <string name="scan_for_devices">Start scan</string>
     <string name="device_already_connected">You already selected that device!</string>
+    <string name="cockpit_tag_register_text">Cockpit Tag</string>
+    <string name="paired_device_dialog_prompt">This device is already paired. Do you want to unbind it?</string>
+    <string name="yes_text">Yes</string>
+    <string name="no_text">No</string>
+    <string name="unpair_device_dialog_title">Unpair device</string>
+    <string name="gyroscope_label">Gyroscope</string>
+    <string name="accelerometer_label">Accelerometer</string>
     <!-- TESTING -->
 
 

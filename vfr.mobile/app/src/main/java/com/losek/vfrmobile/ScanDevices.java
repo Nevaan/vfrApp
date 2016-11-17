@@ -1,5 +1,7 @@
 package com.losek.vfrmobile;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +20,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
     private int timeoutMs = 10000;
     private ArrayAdapter<Node> devicesListAdapter;
     private String currentTag;
+    private VfrApplication appVariables;
 
     private Manager.ManagerListener mUpdateDiscoverGui = new Manager.ManagerListener() {
 
@@ -35,7 +38,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                         stopNodeDiscovery();
                     }//run
                 });
-        }//onDiscoveryChange
+        }
 
         @Override
         public void onNodeDiscovered(Manager m, final Node node) {
@@ -45,7 +48,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                     devicesListAdapter.add(node);
                 }
             });
-        }//onNodeDiscovered
+        }
     };
 
     @Override
@@ -59,6 +62,9 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
         devicesListView.setOnItemClickListener(this);
         devicesListAdapter.addAll(mManager.getNodes());
 
+
+        appVariables = (VfrApplication) getApplication();
+
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
             currentTag = bundle.getString("tag");
@@ -66,11 +72,6 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
 
         mManager.addListener(mUpdateDiscoverGui);
     }
-
-/*    @Override
-    protected void onStart() {
-        super.onStart();
-    }*/
 
     public void discoverDevices(View view) {
         super.startNodeDiscovery(timeoutMs);
@@ -83,7 +84,36 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
 
         final Node selectedNode = devicesListAdapter.getItem(position);
         if (selectedNode.isConnected()){
-            Toast.makeText(this, R.string.device_already_connected, Toast.LENGTH_LONG).show();
+            AlertDialog.Builder dialogBuilder= new AlertDialog.Builder(ScanDevices.this);
+            dialogBuilder.setMessage(R.string.paired_device_dialog_prompt).setCancelable(false)
+                .setPositiveButton(R.string.yes_text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        selectedNode.disconnect();
+                        switch(currentTag) {
+                            case "helmetTag":
+                                appVariables.setHelmetTag(null);
+                                break;
+                            case "cockpitTag":
+                                appVariables.setCockpitTag(null);
+                                break;
+                            default:
+                                System.out.println("Error! I dont know what tag to pair");
+                        }
+                        return;
+                    }
+                })
+                .setNegativeButton(R.string.no_text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+            AlertDialog alert = dialogBuilder.create();
+            alert.setTitle(getString(R.string.unpair_device_dialog_title));
+            alert.show();
+
             return;
         }
         Thread getListItemThread = new Thread(new Runnable() {
@@ -91,7 +121,6 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
             public void run() {
                 System.out.println("Clicked Item: " + selectedNode.getTag());
                 Intent goBack = new Intent(ScanDevices.this, MainActivity.class);
-                VfrApplication appVariables = (VfrApplication) getApplication();
                 switch(currentTag) {
                     case "helmetTag":
                         appVariables.setHelmetTag(selectedNode);

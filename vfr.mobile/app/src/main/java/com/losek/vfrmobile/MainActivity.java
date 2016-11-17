@@ -16,7 +16,6 @@ import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private VfrApplication vfrApp;
 
     @Override
@@ -33,8 +32,12 @@ public class MainActivity extends AppCompatActivity {
         }
         initializeTagNames();
 
+    }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeTagNames();
     }
 
     public void pairCockpitTag(View view) {
@@ -46,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
     public void pairHelmetTag(View view) {
         Intent intent = new Intent(this, ScanDevices.class);
         intent.putExtra("tag","helmetTag");
+        startActivity(intent);
+    }
+
+    public void startRegistering(View view) {
+        Intent intent = new Intent(this, DataRegistrationActivity.class);
         startActivity(intent);
     }
 
