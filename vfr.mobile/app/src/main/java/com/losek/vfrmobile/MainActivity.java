@@ -58,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializeTagNames() {
-        TextView cockpitTagTextView = (TextView) findViewById(R.id.cockpit_tag);
-        TextView helmetTagTextView = (TextView) findViewById(R.id.helmet_tag);
+      //  TextView cockpitTagTextView = (TextView) findViewById(R.id.cockpit_tag);
+      //  TextView helmetTagTextView = (TextView) findViewById(R.id.helmet_tag);
 
         Node cockpitNode = vfrApp.getCockpitTag();
         Node helmetNode = vfrApp.getHelmetTag();
 
-        if(cockpitNode != null) {
+/*        if(cockpitNode != null) {
             cockpitTagTextView.setText(cockpitNode.getFriendlyName());
         } else {
             cockpitTagTextView.setText("Not paired yet!");
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             helmetTagTextView.setText(helmetNode.getFriendlyName());
         } else {
             helmetTagTextView.setText("Not paired yet!");
-        }
+        }*/
     }
 
 
