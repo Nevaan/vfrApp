@@ -172,7 +172,7 @@
                 tools:layout_editor_absoluteY="319dp"
                 tools:layout_editor_absoluteX="30dp"
                 android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"/>
+                style="@style/mainButtons"/>
 
             <Button
                 android:text="@string/stop"
@@ -182,7 +182,8 @@
                 tools:layout_editor_absoluteX="224dp"
                 android:layout_weight="1"
                 android:layout_width="154dp"
-                style="?android:attr/buttonBarButtonStyle"/>
+                style="@style/mainButtons"
+                android:onClick="stopRegistering"/>
 
         </LinearLayout>
 
@@ -199,7 +200,8 @@
                 android:layout_width="154dp"
                 tools:layout_editor_absoluteX="30dp"
                 android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"/>
+                style="@style/mainButtons"
+                android:onClick="exportData"/>
 
             <Button
                 android:text="@string/current_reads"
@@ -209,7 +211,8 @@
                 tools:layout_editor_absoluteY="406dp"
                 tools:layout_editor_absoluteX="217dp"
                 android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"/>
+                style="@style/mainButtons"
+                android:onClick="showLiveData"/>
 
         </LinearLayout>
     </LinearLayout>

@@ -4,12 +4,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.Button;
 
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
@@ -17,18 +17,14 @@ import com.st.BlueSTSDK.Utils.NodeScanActivity;
 
 public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemClickListener{
 
+    Button startScan;
+
     private int timeoutMs = 10000;
     private ArrayAdapter<Node> devicesListAdapter;
     private String currentTag;
     private VfrApplication appVariables;
 
     private Manager.ManagerListener mUpdateDiscoverGui = new Manager.ManagerListener() {
-
-        /**
-         * call the stopNodeDiscovery for update the gui state
-         * @param m manager that start/stop the process
-         * @param enabled true if a new discovery start, false otherwise
-         */
         @Override
         public void onDiscoveryChange(Manager m, boolean enabled) {
             if (!enabled)
@@ -36,7 +32,8 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                     @Override
                     public void run() {
                         stopNodeDiscovery();
-                    }//run
+                        startScan.setText(R.string.start_button);
+                    }
                 });
         }
 
@@ -46,6 +43,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                 @Override
                 public void run() {
                     devicesListAdapter.add(node);
+                    node.addNodeStateListener(stateListener);
                 }
             });
         }
@@ -55,13 +53,14 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_devices);
+        startScan = (Button) findViewById(R.id.lookForDevices);
 
         AbsListView devicesListView = (AbsListView) findViewById(R.id.weSuNodesList);
         devicesListAdapter = new DevicesListAdapter(this, R.layout.bt_devices_list);
         devicesListView.setAdapter(devicesListAdapter);
         devicesListView.setOnItemClickListener(this);
+        mManager.resetDiscovery();
         devicesListAdapter.addAll(mManager.getNodes());
-
 
         appVariables = (VfrApplication) getApplication();
 
@@ -74,8 +73,14 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
     }
 
     public void discoverDevices(View view) {
-        super.startNodeDiscovery(timeoutMs);
-        invalidateOptionsMenu();
+        if (Manager.getSharedInstance().isDiscovering()) {
+            super.stopNodeDiscovery();
+            startScan.setText(R.string.start_button);
+        } else {
+            super.startNodeDiscovery(timeoutMs);
+            startScan.setText(R.string.stop_scan);
+            invalidateOptionsMenu();
+        }
     }
 
 
@@ -83,6 +88,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
     public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l) {
 
         final Node selectedNode = devicesListAdapter.getItem(position);
+
         if (selectedNode.isConnected()){
             AlertDialog.Builder dialogBuilder= new AlertDialog.Builder(ScanDevices.this);
             dialogBuilder.setMessage(R.string.paired_device_dialog_prompt).setCancelable(false)
@@ -90,6 +96,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         selectedNode.disconnect();
+
                         switch(currentTag) {
                             case "helmetTag":
                                 appVariables.setHelmetTag(null);
@@ -120,7 +127,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
             @Override
             public void run() {
                 System.out.println("Clicked Item: " + selectedNode.getTag());
-                Intent goBack = new Intent(ScanDevices.this, MainActivity.class);
+                //Intent goBack = new Intent(ScanDevices.this, MainActivity.class);
                 switch(currentTag) {
                     case "helmetTag":
                         appVariables.setHelmetTag(selectedNode);
@@ -132,11 +139,31 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                         System.out.println("Error! I dont know what tag to pair");
                 }
                 selectedNode.connect(getApplicationContext());
-                startActivity(goBack);
+                mManager.stopDiscovery();
+                ScanDevices.this.finish();
             }
         });
         getListItemThread.start();
-
-
     }
+
+
+    private Node.NodeStateListener stateListener = new Node.NodeStateListener() {
+        @Override
+        public void onStateChange(Node node, Node.State newState, Node.State prevState) {
+            if(prevState.equals(Node.State.Connected) && newState.equals(Node.State.Dead)) {
+                Log.e("VfrApp","Node Lost!!!");
+                if (appVariables.isNodePaired(node)) {
+                    if(node.equals(appVariables.getHelmetTag())) {
+                        Log.d("VfrApp","Unpaired helmet because of node lost!");
+                        appVariables.setHelmetTag(null);
+                    }
+                    if(node.equals(appVariables.getCockpitTag())) {
+                        Log.d("VfrApp","Unpaired cockpit because of node lost!");
+                        appVariables.setCockpitTag(null);
+                    }
+                }
+            }
+        }
+    };
+
 }

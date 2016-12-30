@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,7 +15,10 @@ import com.st.BlueSTSDK.Node;
 
 import org.w3c.dom.Text;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Observable;
+import java.util.Observer;
+
+public class MainActivity extends AppCompatActivity implements Observer{
 
     private VfrApplication vfrApp;
 
@@ -31,13 +35,8 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
         initializeTagNames();
+        vfrApp.addObserver(this);
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        initializeTagNames();
     }
 
     public void pairCockpitTag(View view) {
@@ -53,18 +52,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startRegistering(View view) {
+
+    }
+
+    public void stopRegistering(View view) {
+
+    }
+
+    public void showLiveData(View view) {
         Intent intent = new Intent(this, DataRegistrationActivity.class);
         startActivity(intent);
     }
 
+    public void exportData(View view) {
+
+    }
+
     public void initializeTagNames() {
-      //  TextView cockpitTagTextView = (TextView) findViewById(R.id.cockpit_tag);
-      //  TextView helmetTagTextView = (TextView) findViewById(R.id.helmet_tag);
+        TextView cockpitTagTextView = (TextView) findViewById(R.id.activity_main_cockpit_tag_value);
+        TextView helmetTagTextView = (TextView) findViewById(R.id.activity_main_helmet_tag_value);
 
         Node cockpitNode = vfrApp.getCockpitTag();
         Node helmetNode = vfrApp.getHelmetTag();
 
-/*        if(cockpitNode != null) {
+        if(cockpitNode != null) {
             cockpitTagTextView.setText(cockpitNode.getFriendlyName());
         } else {
             cockpitTagTextView.setText("Not paired yet!");
@@ -74,8 +85,35 @@ public class MainActivity extends AppCompatActivity {
             helmetTagTextView.setText(helmetNode.getFriendlyName());
         } else {
             helmetTagTextView.setText("Not paired yet!");
-        }*/
+        }
     }
 
+
+    @Override
+    public void update(Observable observable, Object o) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                initializeTagNames();
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e("vfr", "destroyed");
+        vfrApp.deleteObserver(this);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.e("vfr", "stopped");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e("vfr", "paused");
+    }
 
 }

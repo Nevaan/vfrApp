@@ -26,6 +26,7 @@
     <string name="current_reads">Current reads</string>
     <string name="export_data">Export data</string>
     <string name="stop">Stop</string>
+    <string name="stop_scan">Stop scanning</string>
     <!-- TESTING -->
 
 

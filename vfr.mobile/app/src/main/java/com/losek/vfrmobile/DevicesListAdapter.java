@@ -1,7 +1,6 @@
 package com.losek.vfrmobile;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +10,6 @@ import android.widget.TextView;
 
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
-
-import java.util.List;
 
 /**
  * Created by pawel on 13.11.2016.
@@ -24,10 +21,6 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
 
     public DevicesListAdapter(Context ctx, int textViewResourceId) {
         super(ctx, textViewResourceId);
-    }
-
-    public DevicesListAdapter(Context ctx, int resource, List<Node> items) {
-        super(ctx, resource, items);
     }
 
     @Override
@@ -55,7 +48,7 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
             if (tt2 != null) {
                 String name = p.getFriendlyName();
                 if(p.isConnected()){
-                    name = name.concat("(paired)");
+                    name = name.concat(" (paired)");
                 }
                 tt2.setText(name);
             }
@@ -74,8 +67,13 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                add(node);
+                VfrApplication app = (VfrApplication) mActivity.getApplication();
+                if (app.isNodePaired(node)) {
+                    add(node);
+                }
             }//run
         });
     }
+
+
 }
