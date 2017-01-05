@@ -2,6 +2,7 @@ package com.losek.vfrmobile;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,8 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
             if (tt2 != null) {
                 String name = p.getFriendlyName();
                 if(p.isConnected()){
-                    name = name.concat(" (paired)");
+                    name = name.concat(" (paired as "+ VfrApplication.getPairedAttributeName(p) + ")");
+                    v.setEnabled(false);
                 }
                 tt2.setText(name);
             }
@@ -59,7 +61,7 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
 
     @Override
     public void onDiscoveryChange(Manager m, boolean enabled) {
-
+        Log.e("DiscChange","Discovery change!");
     }
 
     @Override
@@ -67,10 +69,7 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                VfrApplication app = (VfrApplication) mActivity.getApplication();
-                if (app.isNodePaired(node)) {
-                    add(node);
-                }
+                add(node);
             }//run
         });
     }

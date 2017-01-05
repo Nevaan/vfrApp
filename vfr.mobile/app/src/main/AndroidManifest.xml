@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".ScanDevices" />
         <activity android:name=".DataRegistrationActivity"></activity>
+        <service android:name=".service.DataRegistrationService" android:enabled="true"/>
     </application>
 
 </manifest>

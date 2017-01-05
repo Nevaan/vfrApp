@@ -22,16 +22,17 @@ public class VfrApplication extends Application {
     private static Node cockpitTag;
     private static Node helmetTag;
 
-    public Node getCockpitTag() {
+    public static Node getCockpitTag() {
         return cockpitTag;
     }
 
     public void setCockpitTag(Node cockpitTag) {
+        Log.d("VfrApp", "Setting cockpit tag to " + cockpitTag);
         this.cockpitTag = cockpitTag;
         updateObservers();
     }
 
-    public Node getHelmetTag() {
+    public static Node getHelmetTag() {
         return helmetTag;
     }
 
@@ -60,5 +61,27 @@ public class VfrApplication extends Application {
         observers.remove(o);
         Log.d("VfrApp","Removing observer of vfr application class, count: " + observers.size());
     }
+
+    public void unpairNode(Node node) {
+       if(node.equals(helmetTag)){
+           setHelmetTag(null);
+           return;
+       }
+       if(node.equals(cockpitTag)) {
+           setCockpitTag(null);
+           return;
+       }
+    }
+
+    public static String getPairedAttributeName(Node node) {
+        if(node.equals(helmetTag)){
+            return "helmet tag";
+        }
+        if(node.equals(cockpitTag)) {
+            return "cockpit tag";
+        }
+        return "";
+    }
+
 
 }

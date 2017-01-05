@@ -1,6 +1,5 @@
 package com.losek.vfrmobile;
 
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -11,9 +10,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.losek.vfrmobile.service.DataRegistrationService;
 import com.st.BlueSTSDK.Node;
-
-import org.w3c.dom.Text;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -52,14 +50,19 @@ public class MainActivity extends AppCompatActivity implements Observer{
     }
 
     public void startRegistering(View view) {
-
+        Intent serviceIntent = new Intent(this, DataRegistrationService.class);
+        startService(serviceIntent);
     }
 
     public void stopRegistering(View view) {
-
+        Intent serviceIntent = new Intent(this, DataRegistrationService.class);
+        stopService(serviceIntent);
     }
 
     public void showLiveData(View view) {
+        if(vfrApp.getCockpitTag() == null) {
+            return;
+        }
         Intent intent = new Intent(this, DataRegistrationActivity.class);
         startActivity(intent);
     }
@@ -69,23 +72,28 @@ public class MainActivity extends AppCompatActivity implements Observer{
     }
 
     public void initializeTagNames() {
-        TextView cockpitTagTextView = (TextView) findViewById(R.id.activity_main_cockpit_tag_value);
-        TextView helmetTagTextView = (TextView) findViewById(R.id.activity_main_helmet_tag_value);
+        final TextView cockpitTagTextView = (TextView) findViewById(R.id.activity_main_cockpit_tag_value);
+        final TextView helmetTagTextView = (TextView) findViewById(R.id.activity_main_helmet_tag_value);
 
-        Node cockpitNode = vfrApp.getCockpitTag();
-        Node helmetNode = vfrApp.getHelmetTag();
+        final Node cockpitNode = vfrApp.getCockpitTag();
+        final Node helmetNode = vfrApp.getHelmetTag();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(cockpitNode != null) {
+                    cockpitTagTextView.setText(cockpitNode.getFriendlyName());
+                } else {
+                    cockpitTagTextView.setText("Not paired yet!");
+                }
 
-        if(cockpitNode != null) {
-            cockpitTagTextView.setText(cockpitNode.getFriendlyName());
-        } else {
-            cockpitTagTextView.setText("Not paired yet!");
-        }
+                if(helmetNode!= null) {
+                    helmetTagTextView.setText(helmetNode.getFriendlyName());
+                } else {
+                    helmetTagTextView.setText("Not paired yet!");
+                }
+            }
+        });
 
-        if(helmetNode!= null) {
-            helmetTagTextView.setText(helmetNode.getFriendlyName());
-        } else {
-            helmetTagTextView.setText("Not paired yet!");
-        }
     }
 
 
@@ -101,19 +109,12 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        Log.e("vfr", "destroyed");
-        vfrApp.deleteObserver(this);
+        Log.e("vfr","MainActivity destroyed");
     }
+
     @Override
-    protected void onStop() {
-        super.onStop();
-        Log.e("vfr", "stopped");
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.e("vfr", "paused");
+    protected void onResume() {
+        super.onResume();
     }
 
 }

@@ -15,7 +15,7 @@ import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 import com.st.BlueSTSDK.Utils.NodeScanActivity;
 
-public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemClickListener{
+public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemClickListener {
 
     Button startScan;
 
@@ -43,7 +43,6 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                 @Override
                 public void run() {
                     devicesListAdapter.add(node);
-                    node.addNodeStateListener(stateListener);
                 }
             });
         }
@@ -65,7 +64,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
         appVariables = (VfrApplication) getApplication();
 
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null) {
+        if (bundle != null) {
             currentTag = bundle.getString("tag");
         }
 
@@ -89,33 +88,23 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
 
         final Node selectedNode = devicesListAdapter.getItem(position);
 
-        if (selectedNode.isConnected()){
-            AlertDialog.Builder dialogBuilder= new AlertDialog.Builder(ScanDevices.this);
+        if (selectedNode.isConnected()) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ScanDevices.this);
             dialogBuilder.setMessage(R.string.paired_device_dialog_prompt).setCancelable(false)
-                .setPositiveButton(R.string.yes_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedNode.disconnect();
-
-                        switch(currentTag) {
-                            case "helmetTag":
-                                appVariables.setHelmetTag(null);
-                                break;
-                            case "cockpitTag":
-                                appVariables.setCockpitTag(null);
-                                break;
-                            default:
-                                System.out.println("Error! I dont know what tag to pair");
+                    .setPositiveButton(R.string.yes_text, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            selectedNode.disconnect();
+                            appVariables.unpairNode(selectedNode);
+                            return;
                         }
-                        return;
-                    }
-                })
-                .setNegativeButton(R.string.no_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
+                    })
+                    .setNegativeButton(R.string.no_text, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
 
             AlertDialog alert = dialogBuilder.create();
             alert.setTitle(getString(R.string.unpair_device_dialog_title));
@@ -126,9 +115,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
         Thread getListItemThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("Clicked Item: " + selectedNode.getTag());
-                //Intent goBack = new Intent(ScanDevices.this, MainActivity.class);
-                switch(currentTag) {
+                switch (currentTag) {
                     case "helmetTag":
                         appVariables.setHelmetTag(selectedNode);
                         break;
@@ -139,6 +126,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                         System.out.println("Error! I dont know what tag to pair");
                 }
                 selectedNode.connect(getApplicationContext());
+                selectedNode.addNodeStateListener(stateListener);
                 mManager.stopDiscovery();
                 ScanDevices.this.finish();
             }
@@ -149,20 +137,102 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
 
     private Node.NodeStateListener stateListener = new Node.NodeStateListener() {
         @Override
-        public void onStateChange(Node node, Node.State newState, Node.State prevState) {
-            if(prevState.equals(Node.State.Connected) && newState.equals(Node.State.Dead)) {
-                Log.e("VfrApp","Node Lost!!!");
-                if (appVariables.isNodePaired(node)) {
-                    if(node.equals(appVariables.getHelmetTag())) {
-                        Log.d("VfrApp","Unpaired helmet because of node lost!");
-                        appVariables.setHelmetTag(null);
+        public void onStateChange(final Node node, Node.State newState, Node.State prevState) {
+
+
+                if (prevState.equals(Node.State.Dead) && newState.equals(Node.State.Connecting)) {
+                    Log.d("VfrApp", "DEAD -> CONNECTING: attempt to connect after dying!");
+                }
+
+                if (newState.equals(Node.State.Connected)) {
+                    Log.e("VfrApp", prevState.toString() + " -> CONNECTED : connected after dying!");
+                    appVariables.setCockpitTag(node);
+                }
+
+                if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Connected)) {
+                    Log.e("VfrApp", prevState.toString() + " -> CONNECTED : nice one!");
+                }
+
+                if (newState.equals(Node.State.Dead)) {
+                    Log.e("VfrApp", prevState.toString() + " -> DEAD : attempt to disconnect");
+                    //node.disconnect();
+                    if (appVariables.isNodePaired(node)) {
+                        if (node.equals(appVariables.getHelmetTag())) {
+                            Log.d("VfrApp", "Unpaired helmet because of node lost!");
+                            appVariables.setHelmetTag(null);
+                        }
+                        if (node.equals(appVariables.getCockpitTag())) {
+                            Log.d("VfrApp", "Unpaired cockpit because of node lost!");
+                            appVariables.setCockpitTag(null);
+                        }
+
                     }
-                    if(node.equals(appVariables.getCockpitTag())) {
-                        Log.d("VfrApp","Unpaired cockpit because of node lost!");
-                        appVariables.setCockpitTag(null);
-                    }
+                    Log.e("VfrApp", "Node lost completely");
+                }
+
+            if ((prevState.equals(Node.State.Connected) || prevState.equals(Node.State.Connecting)) && newState.equals(Node.State.Dead)) {
+                Log.e("VfrApp", prevState.toString() + " -> DEAD: Node Lost!!!");
+                node.connect(getApplicationContext());
+                if (!node.isConnected()) {
+
+                } else {
+                    Log.e("VfrApp", "Node connected again");
                 }
             }
+            if (newState.equals(Node.State.Disconnecting)) {
+                Log.e("VfrApp", prevState.toString() + " -> DISCONNECTING : attempt to disconnect");
+            }
+            if (newState.equals(Node.State.Idle)) {
+                Log.e("VfrApp", prevState.toString() + " -> IDLE : attempt to disconnect");
+            }
+            if (newState.equals(Node.State.Lost)) {
+                Log.e("VfrApp", prevState.toString() + " -> LOST : attempt to disconnect");
+            }
+            if (newState.equals(Node.State.Unreachable)) {
+                Log.e("VfrApp", prevState.toString() + " -> UNREACHABLE : attempt to disconnect");
+            }
+
+/*
+            if ((newState == Node.State.Unreachable ||
+                    newState == Node.State.Dead ||
+                    newState == Node.State.Lost)) {
+                switch (newState) {
+                    case Dead:
+                        Log.d("VfrApp", "Node state dead, attempting to reconnect (" + node.getFriendlyName() + ")");
+                        node.connect(getApplicationContext());
+                        break;
+                    case Unreachable:
+                        Log.d("VfrApp", "Node state unreachable (" + node.getFriendlyName() + ")");
+                        break;
+                    case Lost:
+                        Log.d("VfrApp", "Node state lost (" + node.getFriendlyName() + ")");
+                }
+
+                Log.d("VfrApp","IsConnected? " + node.isConnected());
+
+            }
+
+            if(newState == Node.State.Connecting) {
+
+            }*/
+
+/*            if(newState != Node.State.Connected && newState != Node.State.Connecting) {
+                if (node.isConnected()) {
+                    Log.d("VfrApp", "Connected successfully!");
+                } else {
+                    Log.e("VfrApp", "Node Lost!!!");
+                    if (appVariables.isNodePaired(node)) {
+                        if (node.equals(appVariables.getHelmetTag())) {
+                            Log.d("VfrApp", "Unpaired helmet because of node lost!");
+                            appVariables.setHelmetTag(null);
+                        }
+                        if (node.equals(appVariables.getCockpitTag())) {
+                            Log.d("VfrApp", "Unpaired cockpit because of node lost!");
+                            appVariables.setCockpitTag(null);
+                        }
+                    }
+                }
+            }*/
         }
     };
 
