@@ -5,10 +5,7 @@ import android.util.Log;
 
 import com.st.BlueSTSDK.Node;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
@@ -17,6 +14,8 @@ import java.util.Set;
  */
 
 public class VfrApplication extends Application {
+
+    private static final String LOG = "VfrApplication";
 
     private static Set<Observer> observers = new HashSet<>();
     private static Node cockpitTag;
@@ -27,7 +26,7 @@ public class VfrApplication extends Application {
     }
 
     public void setCockpitTag(Node cockpitTag) {
-        Log.d("VfrApp", "Setting cockpit tag to " + cockpitTag);
+        Log.d(LOG, "Setting cockpit tag to " + cockpitTag);
         this.cockpitTag = cockpitTag;
         updateObservers();
     }
@@ -47,19 +46,19 @@ public class VfrApplication extends Application {
 
     private void updateObservers() {
         for (Observer o : observers) {
-            Log.d("VfrApp","Updating observers - one of values changed");
+            Log.d(LOG,"Updating observers - one of values changed");
             o.update(null,null);
         }
     }
 
     public void addObserver(Observer o) {
         observers.add(o);
-        Log.d("VfrApp","Adding new observer for vfr application class, count: " + observers.size());
+        Log.d(LOG,"Adding new observer for vfr application class, count: " + observers.size());
     }
 
     public void deleteObserver(Observer o) {
         observers.remove(o);
-        Log.d("VfrApp","Removing observer of vfr application class, count: " + observers.size());
+        Log.d(LOG,"Removing observer of vfr application class, count: " + observers.size());
     }
 
     public void unpairNode(Node node) {

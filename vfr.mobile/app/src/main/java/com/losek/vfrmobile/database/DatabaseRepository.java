@@ -3,10 +3,8 @@ package com.losek.vfrmobile.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteTransactionListener;
 import android.util.Log;
 
 import com.losek.vfrmobile.database.model.Recording;
@@ -22,6 +20,8 @@ import java.util.Locale;
  */
 
 public class DatabaseRepository extends SQLiteOpenHelper {
+
+    private static final String LOG = "VfrDbRepo";
 
     private static final int DB_VERSION = 2;
 
@@ -83,7 +83,7 @@ public class DatabaseRepository extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
-        Log.d("DbRepository", "Acquired " + recordingList.size() + " recordings.");
+        Log.d(LOG, "Acquired " + recordingList.size() + " recordings.");
         return recordingList;
     }
 

@@ -3,16 +3,16 @@ package com.losek.vfrmobile.activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.losek.vfrmobile.R;
-import com.losek.vfrmobile.util.VfrApplication;
 import com.losek.vfrmobile.service.DataRegistrationService;
+import com.losek.vfrmobile.util.VfrApplication;
 import com.st.BlueSTSDK.Node;
 
 import java.util.Observable;
@@ -20,6 +20,7 @@ import java.util.Observer;
 
 public class MainActivity extends AppCompatActivity implements Observer{
 
+    private static final String LOG = "VfrMainActivity";
     private VfrApplication vfrApp;
 
     @Override
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
     @Override
     protected void onDestroy() {
-        Log.e("vfr","MainActivity destroyed");
+        Log.e(LOG,"MainActivity destroyed");
     }
 
     @Override

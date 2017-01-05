@@ -6,8 +6,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.losek.vfrmobile.util.VfrApplication;
 import com.losek.vfrmobile.database.DatabaseRepository;
+import com.losek.vfrmobile.util.VfrApplication;
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Features.FeatureAcceleration;
 import com.st.BlueSTSDK.Features.FeatureGyroscope;
@@ -18,6 +18,8 @@ import com.st.BlueSTSDK.Features.FeatureMagnetometer;
  */
 
 public class DataRegistrationService extends Service {
+
+    private final static String LOG = "VfrDataRegisterService";
 
     private DatabaseRepository dbRepository;
 
@@ -45,7 +47,7 @@ public class DataRegistrationService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d("DataRegistrationService", "Service created");
+        Log.d(LOG, "Service created");
         dbRepository = new DatabaseRepository(getApplicationContext());
 
         cockpitGyroscopeFeature = VfrApplication.getCockpitTag().getFeature(FeatureGyroscope.class);
@@ -55,7 +57,7 @@ public class DataRegistrationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent,int flags, int startId) {
-        Log.d("DataRegistrationService", "Command started");
+        Log.d(LOG, "Command started");
 
         gyroXListener = new VariableUpdateListener();
         accXListener = new VariableUpdateListener();
@@ -93,7 +95,7 @@ public class DataRegistrationService extends Service {
 
     @Override
     public void onDestroy(){
-        Log.d("DataRegistrationService", "Service destroyed");
+        Log.d(LOG, "Service destroyed");
         cockpitGyroscopeFeature.removeFeatureListener(gyroXListener);
         cockpitGyroscopeFeature.removeFeatureListener(gyroYListener);
         cockpitGyroscopeFeature.removeFeatureListener(gyroZListener);
@@ -113,7 +115,7 @@ public class DataRegistrationService extends Service {
     private class VariableUpdateListener implements Feature.FeatureListener {
         @Override
         public void onUpdate(Feature f, Feature.Sample sample) {
-           // Log.d("RegisterService",sample.toString());
+           // Log.d(LOG,sample.toString());
         }
     }
 

@@ -19,6 +19,7 @@ import com.st.BlueSTSDK.Node;
  */
 
 public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.ManagerListener {
+    private static final String LOG = "VfrDeviceListAdapter";
 
     private Activity mActivity;
 
@@ -63,7 +64,7 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
 
     @Override
     public void onDiscoveryChange(Manager m, boolean enabled) {
-        Log.e("DiscChange","Discovery change!");
+        Log.e(LOG,"Discovery change!");
     }
 
     @Override

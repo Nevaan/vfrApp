@@ -1,11 +1,13 @@
 package com.losek.vfrmobile.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.losek.vfrmobile.R;
 
 public class RecordingsHistoryActivity extends AppCompatActivity {
+
+    private static final String LOG = "VfrRecordingsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

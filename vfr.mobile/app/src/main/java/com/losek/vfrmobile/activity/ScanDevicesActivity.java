@@ -10,8 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
-import com.losek.vfrmobile.activity.adapter.DevicesListAdapter;
 import com.losek.vfrmobile.R;
+import com.losek.vfrmobile.activity.adapter.DevicesListAdapter;
 import com.losek.vfrmobile.util.VfrApplication;
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
@@ -19,6 +19,7 @@ import com.st.BlueSTSDK.Utils.NodeScanActivity;
 
 public class ScanDevicesActivity extends NodeScanActivity implements AbsListView.OnItemClickListener {
 
+    private static final String LOG = "VfrScanDevActivity";
     Button startScan;
 
     private int timeoutMs = 10000;
@@ -143,28 +144,28 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
 
 
                 if (prevState.equals(Node.State.Dead) && newState.equals(Node.State.Connecting)) {
-                    Log.d("VfrApp", "DEAD -> CONNECTING: attempt to connect after dying!");
+                    Log.d(LOG, "DEAD -> CONNECTING: attempt to connect after dying!");
                 }
 
                 if (newState.equals(Node.State.Connected)) {
-                    Log.e("VfrApp", prevState.toString() + " -> CONNECTED : connected after dying!");
+                    Log.e(LOG, prevState.toString() + " -> CONNECTED : connected after dying!");
                     appVariables.setCockpitTag(node);
                 }
 
                 if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Connected)) {
-                    Log.e("VfrApp", prevState.toString() + " -> CONNECTED : nice one!");
+                    Log.e(LOG, prevState.toString() + " -> CONNECTED : nice one!");
                 }
 
                 if (newState.equals(Node.State.Dead)) {
-                    Log.e("VfrApp", prevState.toString() + " -> DEAD : attempt to disconnect");
+                    Log.e(LOG, prevState.toString() + " -> DEAD : attempt to disconnect");
                     //node.disconnect();
                     if (appVariables.isNodePaired(node)) {
                         if (node.equals(appVariables.getHelmetTag())) {
-                            Log.d("VfrApp", "Unpaired helmet because of node lost!");
+                            Log.d(LOG, "Unpaired helmet because of node lost!");
                             appVariables.setHelmetTag(null);
                         }
                         if (node.equals(appVariables.getCockpitTag())) {
-                            Log.d("VfrApp", "Unpaired cockpit because of node lost!");
+                            Log.d(LOG, "Unpaired cockpit because of node lost!");
                             appVariables.setCockpitTag(null);
                         }
 
@@ -173,25 +174,25 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                 }
 
             if ((prevState.equals(Node.State.Connected) || prevState.equals(Node.State.Connecting)) && newState.equals(Node.State.Dead)) {
-                Log.e("VfrApp", prevState.toString() + " -> DEAD: Node Lost!!!");
+                Log.e(LOG, prevState.toString() + " -> DEAD: Node Lost!!!");
                 node.connect(getApplicationContext());
                 if (!node.isConnected()) {
 
                 } else {
-                    Log.e("VfrApp", "Node connected again");
+                    Log.e(LOG, "Node connected again");
                 }
             }
             if (newState.equals(Node.State.Disconnecting)) {
-                Log.e("VfrApp", prevState.toString() + " -> DISCONNECTING : attempt to disconnect");
+                Log.e(LOG, prevState.toString() + " -> DISCONNECTING : attempt to disconnect");
             }
             if (newState.equals(Node.State.Idle)) {
-                Log.e("VfrApp", prevState.toString() + " -> IDLE : attempt to disconnect");
+                Log.e(LOG, prevState.toString() + " -> IDLE : attempt to disconnect");
             }
             if (newState.equals(Node.State.Lost)) {
-                Log.e("VfrApp", prevState.toString() + " -> LOST : attempt to disconnect");
+                Log.e(LOG, prevState.toString() + " -> LOST : attempt to disconnect");
             }
             if (newState.equals(Node.State.Unreachable)) {
-                Log.e("VfrApp", prevState.toString() + " -> UNREACHABLE : attempt to disconnect");
+                Log.e(LOG, prevState.toString() + " -> UNREACHABLE : attempt to disconnect");
             }
 
 /*
@@ -200,17 +201,17 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                     newState == Node.State.Lost)) {
                 switch (newState) {
                     case Dead:
-                        Log.d("VfrApp", "Node state dead, attempting to reconnect (" + node.getFriendlyName() + ")");
+                        Log.d(LOG, "Node state dead, attempting to reconnect (" + node.getFriendlyName() + ")");
                         node.connect(getApplicationContext());
                         break;
                     case Unreachable:
-                        Log.d("VfrApp", "Node state unreachable (" + node.getFriendlyName() + ")");
+                        Log.d(LOG, "Node state unreachable (" + node.getFriendlyName() + ")");
                         break;
                     case Lost:
-                        Log.d("VfrApp", "Node state lost (" + node.getFriendlyName() + ")");
+                        Log.d(LOG, "Node state lost (" + node.getFriendlyName() + ")");
                 }
 
-                Log.d("VfrApp","IsConnected? " + node.isConnected());
+                Log.d(LOG,"IsConnected? " + node.isConnected());
 
             }
 
@@ -220,16 +221,16 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
 
 /*            if(newState != Node.State.Connected && newState != Node.State.Connecting) {
                 if (node.isConnected()) {
-                    Log.d("VfrApp", "Connected successfully!");
+                    Log.d(LOG, "Connected successfully!");
                 } else {
-                    Log.e("VfrApp", "Node Lost!!!");
+                    Log.e(LOG, "Node Lost!!!");
                     if (appVariables.isNodePaired(node)) {
                         if (node.equals(appVariables.getHelmetTag())) {
-                            Log.d("VfrApp", "Unpaired helmet because of node lost!");
+                            Log.d(LOG, "Unpaired helmet because of node lost!");
                             appVariables.setHelmetTag(null);
                         }
                         if (node.equals(appVariables.getCockpitTag())) {
-                            Log.d("VfrApp", "Unpaired cockpit because of node lost!");
+                            Log.d(LOG, "Unpaired cockpit because of node lost!");
                             appVariables.setCockpitTag(null);
                         }
                     }
