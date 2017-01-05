@@ -1,4 +1,4 @@
-package com.losek.vfrmobile;
+package com.losek.vfrmobile.util;
 
 import android.app.Application;
 import android.util.Log;

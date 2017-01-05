@@ -1,4 +1,4 @@
-package com.losek.vfrmobile;
+package com.losek.vfrmobile.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.losek.vfrmobile.R;
+import com.losek.vfrmobile.util.VfrApplication;
 import com.losek.vfrmobile.service.DataRegistrationService;
 import com.st.BlueSTSDK.Node;
 
@@ -38,13 +40,13 @@ public class MainActivity extends AppCompatActivity implements Observer{
     }
 
     public void pairCockpitTag(View view) {
-        Intent intent = new Intent(this, ScanDevices.class);
+        Intent intent = new Intent(this, ScanDevicesActivity.class);
         intent.putExtra("tag","cockpitTag");
         startActivity(intent);
     }
 
     public void pairHelmetTag(View view) {
-        Intent intent = new Intent(this, ScanDevices.class);
+        Intent intent = new Intent(this, ScanDevicesActivity.class);
         intent.putExtra("tag","helmetTag");
         startActivity(intent);
     }
@@ -63,12 +65,13 @@ public class MainActivity extends AppCompatActivity implements Observer{
         if(vfrApp.getCockpitTag() == null) {
             return;
         }
-        Intent intent = new Intent(this, DataRegistrationActivity.class);
+        Intent intent = new Intent(this, LiveDataActivity.class);
         startActivity(intent);
     }
 
     public void exportData(View view) {
-
+        Intent intent = new Intent(this, RecordingsHistoryActivity.class);
+        startActivity(intent);
     }
 
     public void initializeTagNames() {

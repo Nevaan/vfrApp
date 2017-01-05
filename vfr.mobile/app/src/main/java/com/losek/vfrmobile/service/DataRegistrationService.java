@@ -6,7 +6,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.losek.vfrmobile.VfrApplication;
+import com.losek.vfrmobile.util.VfrApplication;
+import com.losek.vfrmobile.database.DatabaseRepository;
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Features.FeatureAcceleration;
 import com.st.BlueSTSDK.Features.FeatureGyroscope;
@@ -17,6 +18,8 @@ import com.st.BlueSTSDK.Features.FeatureMagnetometer;
  */
 
 public class DataRegistrationService extends Service {
+
+    private DatabaseRepository dbRepository;
 
     private Feature cockpitGyroscopeFeature;
     private Feature cockpitAccelerometerFeature;
@@ -43,6 +46,8 @@ public class DataRegistrationService extends Service {
     @Override
     public void onCreate() {
         Log.d("DataRegistrationService", "Service created");
+        dbRepository = new DatabaseRepository(getApplicationContext());
+
         cockpitGyroscopeFeature = VfrApplication.getCockpitTag().getFeature(FeatureGyroscope.class);
         cockpitAccelerometerFeature = VfrApplication.getCockpitTag().getFeature(FeatureAcceleration.class);
         cockpitMagnetometerFeature = VfrApplication.getCockpitTag().getFeature(FeatureMagnetometer.class);
@@ -81,6 +86,8 @@ public class DataRegistrationService extends Service {
         VfrApplication.getCockpitTag().enableNotification(cockpitAccelerometerFeature);
         VfrApplication.getCockpitTag().enableNotification(cockpitGyroscopeFeature);
 
+        dbRepository.createRecording();
+
         return START_STICKY;
     }
 
@@ -99,12 +106,14 @@ public class DataRegistrationService extends Service {
         cockpitMagnetometerFeature.removeFeatureListener(magYListener);
         cockpitMagnetometerFeature.removeFeatureListener(magZListener);
 
+        dbRepository.getRecordingList();
+        dbRepository.closeDbConnection();
     }
 
     private class VariableUpdateListener implements Feature.FeatureListener {
         @Override
         public void onUpdate(Feature f, Feature.Sample sample) {
-            Log.d("RegisterService",sample.toString());
+           // Log.d("RegisterService",sample.toString());
         }
     }
 

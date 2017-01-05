@@ -1,4 +1,4 @@
-package com.losek.vfrmobile;
+package com.losek.vfrmobile.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.losek.vfrmobile.R;
+import com.losek.vfrmobile.util.VfrApplication;
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Features.FeatureAcceleration;
 import com.st.BlueSTSDK.Features.FeatureBattery;
@@ -16,7 +18,7 @@ import com.st.BlueSTSDK.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataRegistrationActivity extends AppCompatActivity {
+public class LiveDataActivity extends AppCompatActivity {
 
     public enum Characteristic {
         X, Y, Z, BATTERY
@@ -141,7 +143,7 @@ public class DataRegistrationActivity extends AppCompatActivity {
                 default:
                         value = "";
             }
-            DataRegistrationActivity.this.runOnUiThread(new Runnable() {
+            LiveDataActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mTextView.setText(value);

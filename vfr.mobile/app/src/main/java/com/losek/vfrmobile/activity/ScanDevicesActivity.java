@@ -1,8 +1,7 @@
-package com.losek.vfrmobile;
+package com.losek.vfrmobile.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,11 +10,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.losek.vfrmobile.activity.adapter.DevicesListAdapter;
+import com.losek.vfrmobile.R;
+import com.losek.vfrmobile.util.VfrApplication;
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 import com.st.BlueSTSDK.Utils.NodeScanActivity;
 
-public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemClickListener {
+public class ScanDevicesActivity extends NodeScanActivity implements AbsListView.OnItemClickListener {
 
     Button startScan;
 
@@ -28,7 +30,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
         @Override
         public void onDiscoveryChange(Manager m, boolean enabled) {
             if (!enabled)
-                ScanDevices.this.runOnUiThread(new Runnable() {
+                ScanDevicesActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         stopNodeDiscovery();
@@ -39,7 +41,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
 
         @Override
         public void onNodeDiscovered(Manager m, final Node node) {
-            ScanDevices.this.runOnUiThread(new Runnable() {
+            ScanDevicesActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     devicesListAdapter.add(node);
@@ -89,7 +91,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
         final Node selectedNode = devicesListAdapter.getItem(position);
 
         if (selectedNode.isConnected()) {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ScanDevices.this);
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ScanDevicesActivity.this);
             dialogBuilder.setMessage(R.string.paired_device_dialog_prompt).setCancelable(false)
                     .setPositiveButton(R.string.yes_text, new DialogInterface.OnClickListener() {
                         @Override
@@ -128,7 +130,7 @@ public class ScanDevices extends NodeScanActivity implements AbsListView.OnItemC
                 selectedNode.connect(getApplicationContext());
                 selectedNode.addNodeStateListener(stateListener);
                 mManager.stopDiscovery();
-                ScanDevices.this.finish();
+                ScanDevicesActivity.this.finish();
             }
         });
         getListItemThread.start();

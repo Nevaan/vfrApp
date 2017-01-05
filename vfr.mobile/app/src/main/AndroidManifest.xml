@@ -10,22 +10,27 @@
         android:required="true" />
 
     <application
-        android:name=".VfrApplication"
+        android:name=".util.VfrApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ScanDevices" />
-        <activity android:name=".DataRegistrationActivity"></activity>
-        <service android:name=".service.DataRegistrationService" android:enabled="true"/>
+        <activity android:name=".activity.ScanDevicesActivity" />
+        <activity android:name=".activity.LiveDataActivity" />
+
+        <service
+            android:name=".service.DataRegistrationService"
+            android:enabled="true" />
+
+        <activity android:name=".activity.RecordingsHistoryActivity"></activity>
     </application>
 
 </manifest>

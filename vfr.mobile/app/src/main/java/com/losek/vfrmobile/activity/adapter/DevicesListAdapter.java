@@ -1,4 +1,4 @@
-package com.losek.vfrmobile;
+package com.losek.vfrmobile.activity.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.losek.vfrmobile.R;
+import com.losek.vfrmobile.util.VfrApplication;
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 
