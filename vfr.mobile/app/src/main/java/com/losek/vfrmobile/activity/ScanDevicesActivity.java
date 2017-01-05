@@ -58,7 +58,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
         startScan = (Button) findViewById(R.id.lookForDevices);
 
         AbsListView devicesListView = (AbsListView) findViewById(R.id.weSuNodesList);
-        devicesListAdapter = new DevicesListAdapter(this, R.layout.bt_devices_list);
+        devicesListAdapter = new DevicesListAdapter(this, R.layout.device_list_element);
         devicesListView.setAdapter(devicesListAdapter);
         devicesListView.setOnItemClickListener(this);
         mManager.resetDiscovery();
@@ -194,48 +194,6 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
             if (newState.equals(Node.State.Unreachable)) {
                 Log.e(LOG, prevState.toString() + " -> UNREACHABLE : attempt to disconnect");
             }
-
-/*
-            if ((newState == Node.State.Unreachable ||
-                    newState == Node.State.Dead ||
-                    newState == Node.State.Lost)) {
-                switch (newState) {
-                    case Dead:
-                        Log.d(LOG, "Node state dead, attempting to reconnect (" + node.getFriendlyName() + ")");
-                        node.connect(getApplicationContext());
-                        break;
-                    case Unreachable:
-                        Log.d(LOG, "Node state unreachable (" + node.getFriendlyName() + ")");
-                        break;
-                    case Lost:
-                        Log.d(LOG, "Node state lost (" + node.getFriendlyName() + ")");
-                }
-
-                Log.d(LOG,"IsConnected? " + node.isConnected());
-
-            }
-
-            if(newState == Node.State.Connecting) {
-
-            }*/
-
-/*            if(newState != Node.State.Connected && newState != Node.State.Connecting) {
-                if (node.isConnected()) {
-                    Log.d(LOG, "Connected successfully!");
-                } else {
-                    Log.e(LOG, "Node Lost!!!");
-                    if (appVariables.isNodePaired(node)) {
-                        if (node.equals(appVariables.getHelmetTag())) {
-                            Log.d(LOG, "Unpaired helmet because of node lost!");
-                            appVariables.setHelmetTag(null);
-                        }
-                        if (node.equals(appVariables.getCockpitTag())) {
-                            Log.d(LOG, "Unpaired cockpit because of node lost!");
-                            appVariables.setCockpitTag(null);
-                        }
-                    }
-                }
-            }*/
         }
     };
 

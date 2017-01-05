@@ -35,7 +35,7 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
         if (v == null) {
             LayoutInflater vi;
             vi = LayoutInflater.from(getContext());
-            v = vi.inflate(R.layout.bt_devices_list, null);
+            v = vi.inflate(R.layout.device_list_element, null);
         }
 
         Node p = getItem(position);

@@ -1,6 +1,7 @@
 package com.losek.vfrmobile.util;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.st.BlueSTSDK.Node;
@@ -72,6 +73,7 @@ public class VfrApplication extends Application {
        }
     }
 
+    @NonNull
     public static String getPairedAttributeName(Node node) {
         if(node.equals(helmetTag)){
             return "helmet tag";
