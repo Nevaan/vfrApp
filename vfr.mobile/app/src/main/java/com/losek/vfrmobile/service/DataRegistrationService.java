@@ -2,16 +2,21 @@ package com.losek.vfrmobile.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.losek.vfrmobile.database.DatabaseRepository;
 import com.losek.vfrmobile.util.VfrApplication;
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Features.FeatureAcceleration;
 import com.st.BlueSTSDK.Features.FeatureGyroscope;
 import com.st.BlueSTSDK.Features.FeatureMagnetometer;
+import com.st.BlueSTSDK.Log.FeatureLogCSVFile;
+import com.st.BlueSTSDK.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pawel on 05.01.2017.
@@ -21,23 +26,18 @@ public class DataRegistrationService extends Service {
 
     private final static String LOG = "VfrDataRegisterService";
 
-    private DatabaseRepository dbRepository;
+    private static Feature.FeatureLoggerListener csvLogger;
 
     private Feature cockpitGyroscopeFeature;
     private Feature cockpitAccelerometerFeature;
     private Feature cockpitMagnetometerFeature;
 
-    private Feature.FeatureListener gyroXListener;
-    private Feature.FeatureListener accXListener;
-    private Feature.FeatureListener magXListener;
+    private Feature helmetGyroscopeFeature;
+    private Feature helmetAccelerometerFeature;
+    private Feature helmetMagnetometerFeature;
 
-    private Feature.FeatureListener gyroYListener;
-    private Feature.FeatureListener accYListener;
-    private Feature.FeatureListener magYListener;
-
-    private Feature.FeatureListener gyroZListener;
-    private Feature.FeatureListener accZListener;
-    private Feature.FeatureListener magZListener;
+    Node cockpitTag;
+    Node helmetTag;
 
     @Nullable
     @Override
@@ -48,75 +48,98 @@ public class DataRegistrationService extends Service {
     @Override
     public void onCreate() {
         Log.d(LOG, "Service created");
-        dbRepository = new DatabaseRepository(getApplicationContext());
 
-        cockpitGyroscopeFeature = VfrApplication.getCockpitTag().getFeature(FeatureGyroscope.class);
-        cockpitAccelerometerFeature = VfrApplication.getCockpitTag().getFeature(FeatureAcceleration.class);
-        cockpitMagnetometerFeature = VfrApplication.getCockpitTag().getFeature(FeatureMagnetometer.class);
+        String s = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath();
+
+        cockpitTag = VfrApplication.getCockpitTag();
+        helmetTag = VfrApplication.getHelmetTag();
+
+        List<Node> nodes = new ArrayList<>();
+        if(cockpitTag != null)
+            nodes.add(cockpitTag);
+
+        if(helmetTag != null)
+            nodes.add(helmetTag);
+
+        csvLogger = new FeatureLogCSVFile(s, nodes);
+
+        if(cockpitTag!=null) {
+            cockpitGyroscopeFeature = cockpitTag.getFeature(FeatureGyroscope.class);
+            cockpitAccelerometerFeature = cockpitTag.getFeature(FeatureAcceleration.class);
+            cockpitMagnetometerFeature = cockpitTag.getFeature(FeatureMagnetometer.class);
+
+       /*     cockpitTag.enableNotification(cockpitAccelerometerFeature);
+            cockpitTag.enableNotification(cockpitGyroscopeFeature);
+            cockpitTag.enableNotification(cockpitMagnetometerFeature);*/
+        }
+
+        if(helmetTag != null) {
+            helmetGyroscopeFeature = helmetTag.getFeature(FeatureGyroscope.class);
+            helmetAccelerometerFeature = helmetTag.getFeature(FeatureAcceleration.class);
+            helmetMagnetometerFeature = helmetTag.getFeature(FeatureMagnetometer.class);
+
+/*            helmetTag.enableNotification(helmetGyroscopeFeature);
+            helmetTag.enableNotification(helmetAccelerometerFeature);
+            helmetTag.enableNotification(helmetMagnetometerFeature);*/
+
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent,int flags, int startId) {
-        Log.d(LOG, "Command started");
+        Log.d(LOG, "Service started");
 
-        gyroXListener = new VariableUpdateListener();
-        accXListener = new VariableUpdateListener();
-        magXListener = new VariableUpdateListener();
+        if(cockpitTag != null) {
+            cockpitAccelerometerFeature.addFeatureLoggerListener(csvLogger);
+            cockpitGyroscopeFeature.addFeatureLoggerListener(csvLogger);
+            cockpitMagnetometerFeature.addFeatureLoggerListener(csvLogger);
+
+            Log.d(LOG, "Added listener for cockpit tag features");
+        }
+
+        if(helmetTag != null) {
+            helmetGyroscopeFeature.addFeatureLoggerListener(csvLogger);
+            helmetAccelerometerFeature.addFeatureLoggerListener(csvLogger);
+            helmetMagnetometerFeature.addFeatureLoggerListener(csvLogger);
+            Log.d(LOG, "Added listener for helmet tag features");
+
+        }
 
 
-        gyroYListener = new VariableUpdateListener();
-        accYListener = new VariableUpdateListener();
-        magYListener = new VariableUpdateListener();
-
-        gyroZListener = new VariableUpdateListener();
-        accZListener = new VariableUpdateListener();
-        magZListener = new VariableUpdateListener();
-
-        cockpitGyroscopeFeature.addFeatureListener(gyroXListener);
-        cockpitGyroscopeFeature.addFeatureListener(gyroYListener);
-        cockpitGyroscopeFeature.addFeatureListener(gyroZListener);
-
-        cockpitAccelerometerFeature.addFeatureListener(accXListener);
-        cockpitAccelerometerFeature.addFeatureListener(accYListener);
-        cockpitAccelerometerFeature.addFeatureListener(accZListener);
-
-        cockpitMagnetometerFeature.addFeatureListener(magXListener);
-        cockpitMagnetometerFeature.addFeatureListener(magYListener);
-        cockpitMagnetometerFeature.addFeatureListener(magZListener);
-
-        VfrApplication.getCockpitTag().enableNotification(cockpitMagnetometerFeature);
-        VfrApplication.getCockpitTag().enableNotification(cockpitAccelerometerFeature);
-        VfrApplication.getCockpitTag().enableNotification(cockpitGyroscopeFeature);
-
-        dbRepository.createRecording();
 
         return START_STICKY;
     }
 
     @Override
     public void onDestroy(){
-        Log.d(LOG, "Service destroyed");
-        cockpitGyroscopeFeature.removeFeatureListener(gyroXListener);
-        cockpitGyroscopeFeature.removeFeatureListener(gyroYListener);
-        cockpitGyroscopeFeature.removeFeatureListener(gyroZListener);
 
-        cockpitAccelerometerFeature.removeFeatureListener(accXListener);
-        cockpitAccelerometerFeature.removeFeatureListener(accYListener);
-        cockpitAccelerometerFeature.removeFeatureListener(accZListener);
+        if(cockpitTag != null) {
+            cockpitAccelerometerFeature.removeFeatureLoggerListener(csvLogger);
+            cockpitGyroscopeFeature.removeFeatureLoggerListener(csvLogger);
+            cockpitMagnetometerFeature.removeFeatureLoggerListener(csvLogger);
 
-        cockpitMagnetometerFeature.removeFeatureListener(magXListener);
-        cockpitMagnetometerFeature.removeFeatureListener(magYListener);
-        cockpitMagnetometerFeature.removeFeatureListener(magZListener);
+            cockpitTag.disableNotification(cockpitAccelerometerFeature);
+            cockpitTag.disableNotification(cockpitGyroscopeFeature);
+            cockpitTag.disableNotification(cockpitMagnetometerFeature);
 
-        dbRepository.getRecordingList();
-        dbRepository.closeDbConnection();
-    }
+            Log.d(LOG, "Removed listener for cockpit tag features");
 
-    private class VariableUpdateListener implements Feature.FeatureListener {
-        @Override
-        public void onUpdate(Feature f, Feature.Sample sample) {
-           // Log.d(LOG,sample.toString());
         }
-    }
 
+        if(helmetTag != null) {
+            helmetGyroscopeFeature.removeFeatureLoggerListener(csvLogger);
+            helmetAccelerometerFeature.removeFeatureLoggerListener(csvLogger);
+            helmetMagnetometerFeature.removeFeatureLoggerListener(csvLogger);
+
+            helmetTag.disableNotification(helmetGyroscopeFeature);
+            helmetTag.disableNotification(helmetAccelerometerFeature);
+            helmetTag.disableNotification(helmetMagnetometerFeature);
+
+            Log.d(LOG, "Removed listener for helmet tag features");
+
+        }
+
+        Log.d(LOG, "Service destroyed");
+
+    }
 }

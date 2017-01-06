@@ -13,6 +13,10 @@ import android.widget.Button;
 import com.losek.vfrmobile.R;
 import com.losek.vfrmobile.activity.adapter.DevicesListAdapter;
 import com.losek.vfrmobile.util.VfrApplication;
+import com.st.BlueSTSDK.Features.FeatureAcceleration;
+import com.st.BlueSTSDK.Features.FeatureBattery;
+import com.st.BlueSTSDK.Features.FeatureGyroscope;
+import com.st.BlueSTSDK.Features.FeatureMagnetometer;
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 import com.st.BlueSTSDK.Utils.NodeScanActivity;
@@ -153,6 +157,13 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                 }
 
                 if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Connected)) {
+                    Log.e(LOG, "Notify enable before again connect: " + node.isEnableNotification(node.getFeature(FeatureAcceleration.class)));
+
+                    node.enableNotification(node.getFeature(FeatureAcceleration.class));
+                    node.enableNotification(node.getFeature(FeatureGyroscope.class));
+                    node.enableNotification(node.getFeature(FeatureMagnetometer.class));
+                    node.enableNotification(node.getFeature(FeatureBattery.class));
+
                     Log.e(LOG, prevState.toString() + " -> CONNECTED : nice one!");
                 }
 

@@ -1,6 +1,7 @@
 package com.losek.vfrmobile.activity.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import com.losek.vfrmobile.database.model.Recording;
  */
 
 public class RecordingListAdapter extends ArrayAdapter<Recording> {
+
+    public static final String LOG = "VfrRecordListAdapter";
 
     public RecordingListAdapter(Context ctx, int textViewResourceId) {
         super(ctx, textViewResourceId);
@@ -42,6 +45,14 @@ public class RecordingListAdapter extends ArrayAdapter<Recording> {
             }
 
         }
+
+        resultView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Log.d(LOG,"cliecked as hell");
+                return true;
+            }
+        });
 
         return resultView;
     }

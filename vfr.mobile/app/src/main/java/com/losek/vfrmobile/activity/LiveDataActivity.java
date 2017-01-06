@@ -1,7 +1,7 @@
 package com.losek.vfrmobile.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -96,9 +96,9 @@ public class LiveDataActivity extends AppCompatActivity {
 
         batteryFeature.addFeatureListener(batteryListener);
 
-        vfrApp.getCockpitTag().enableNotification(gyroscopeFeature);
+/*        vfrApp.getCockpitTag().enableNotification(gyroscopeFeature);
         vfrApp.getCockpitTag().enableNotification(accelerometerFeature);
-        vfrApp.getCockpitTag().enableNotification(batteryFeature);
+        vfrApp.getCockpitTag().enableNotification(batteryFeature);*/
     }
 
 

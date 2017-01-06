@@ -31,6 +31,7 @@ public class RecordingsHistoryActivity extends AppCompatActivity {
         dbRepository = new DatabaseRepository(this);
 
         recordingListView = (ListView) findViewById(R.id.recording_list);
+        recordingListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         List<Recording> recordings = dbRepository.getRecordingList();
         recordingArrayAdapter = new RecordingListAdapter(this, R.layout.recording_history_list_element);
         recordingArrayAdapter.addAll(recordings);
