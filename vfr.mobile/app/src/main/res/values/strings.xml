@@ -5,6 +5,7 @@
     <string name="helmet">Helmet</string>
     <string name="start_button">Start registering</string>
     <string name="pair_button">Pair device</string>
+    <string name="unpair_button">Unpair device</string>
     <string name="search_devices">Search devices</string>
     <string name="ble_not_supported">Low Energy Bluetooth is not available on this device</string>
     <string name="scan_for_devices">Start scan</string>

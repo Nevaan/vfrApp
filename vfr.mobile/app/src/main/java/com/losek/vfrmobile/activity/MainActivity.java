@@ -11,8 +11,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,11 +25,17 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MainActivity extends AppCompatActivity implements Observer{
+public class MainActivity extends AppCompatActivity implements Observer {
 
     private static final String LOG = "VfrMainActivity";
     private VfrApplication vfrApp;
     private static final int REQUEST_PERMISSIONS = 20;
+
+    Button startRegistering;
+    Button stopRegistering;
+    Button liveDataButton;
+    Button pairCockpitTag;
+    Button pairHelmetTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,16 @@ public class MainActivity extends AppCompatActivity implements Observer{
         setContentView(R.layout.activity_main);
         vfrApp = (VfrApplication) getApplication();
 
+        startRegistering = (Button) findViewById(R.id.start_button);
+        stopRegistering = (Button) findViewById(R.id.stop_button);
+        liveDataButton = (Button) findViewById(R.id.current_reads_button);
+        pairCockpitTag = (Button) findViewById(R.id.activity_main_cockpit_pair_button);
+        pairHelmetTag = (Button) findViewById(R.id.activity_main_helmet_pair_button);
+
+
+        startRegistering.setEnabled(false);
+        stopRegistering.setEnabled(false);
+        liveDataButton.setEnabled(false);
 
         // BLE not supported
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) && !(Build.MODEL.equals("Android SDK built for x86"))) {
@@ -49,15 +65,25 @@ public class MainActivity extends AppCompatActivity implements Observer{
     }
 
     public void pairCockpitTag(View view) {
-        Intent intent = new Intent(this, ScanDevicesActivity.class);
-        intent.putExtra("tag","cockpitTag");
-        startActivity(intent);
+        if (pairCockpitTag.getText().equals(getResources().getString(R.string.pair_button))) {
+            Intent intent = new Intent(this, ScanDevicesActivity.class);
+            intent.putExtra("tag", "cockpitTag");
+            startActivity(intent);
+        } else {
+            VfrApplication.getCockpitTag().disconnect();
+            vfrApp.setCockpitTag(null);
+        }
     }
 
     public void pairHelmetTag(View view) {
-        Intent intent = new Intent(this, ScanDevicesActivity.class);
-        intent.putExtra("tag","helmetTag");
-        startActivity(intent);
+        if (pairHelmetTag.getText().equals(getResources().getString(R.string.pair_button))) {
+            Intent intent = new Intent(this, ScanDevicesActivity.class);
+            intent.putExtra("tag", "helmetTag");
+            startActivity(intent);
+        } else {
+            VfrApplication.getHelmetTag().disconnect();
+            vfrApp.setHelmetTag(null);
+        }
     }
 
     public void startRegistering(View view) {
@@ -89,6 +115,9 @@ public class MainActivity extends AppCompatActivity implements Observer{
 
         Intent serviceIntent = new Intent(this, DataRegistrationService.class);
         startService(serviceIntent);
+
+        startRegistering.setEnabled(false);
+        stopRegistering.setEnabled(true);
     }
 
     public void stopRegistering(View view) {
@@ -98,15 +127,18 @@ public class MainActivity extends AppCompatActivity implements Observer{
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath());
         File[] files = f.listFiles();
-        for(File filen : files) {
+        for (File filen : files) {
             Uri contentUri = Uri.fromFile(filen);
             mediaScanIntent.setData(contentUri);
             this.sendBroadcast(mediaScanIntent);
         }
+
+        startRegistering.setEnabled(true);
+        stopRegistering.setEnabled(false);
     }
 
     public void showLiveData(View view) {
-        if(vfrApp.getCockpitTag() == null) {
+        if (vfrApp.getCockpitTag() == null && vfrApp.getHelmetTag() == null) {
             return;
         }
         Intent intent = new Intent(this, LiveDataActivity.class);
@@ -121,22 +153,36 @@ public class MainActivity extends AppCompatActivity implements Observer{
     public void initializeTagNames() {
         final TextView cockpitTagTextView = (TextView) findViewById(R.id.activity_main_cockpit_tag_value);
         final TextView helmetTagTextView = (TextView) findViewById(R.id.activity_main_helmet_tag_value);
+        final Button cockpitPairButton = (Button) findViewById(R.id.activity_main_cockpit_pair_button);
+        final Button helmetPairButton = (Button) findViewById(R.id.activity_main_helmet_pair_button);
+        final Button currentReads = (Button) findViewById(R.id.current_reads_button);
 
         final Node cockpitNode = vfrApp.getCockpitTag();
         final Node helmetNode = vfrApp.getHelmetTag();
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(cockpitNode != null) {
+                if (cockpitNode != null) {
                     cockpitTagTextView.setText(cockpitNode.getFriendlyName());
+                    cockpitPairButton.setText(R.string.unpair_button);
+                    currentReads.setEnabled(true);
                 } else {
                     cockpitTagTextView.setText("Not paired yet!");
+                    cockpitPairButton.setText(R.string.pair_button);
                 }
 
-                if(helmetNode!= null) {
+                if (helmetNode != null) {
                     helmetTagTextView.setText(helmetNode.getFriendlyName());
+                    helmetPairButton.setText(R.string.unpair_button);
+                    currentReads.setEnabled(true);
                 } else {
                     helmetTagTextView.setText("Not paired yet!");
+                    helmetPairButton.setText(R.string.pair_button);
+                }
+
+                if(cockpitNode == null && helmetNode == null) {
+                    currentReads.setEnabled(false);
                 }
             }
         });
@@ -157,13 +203,5 @@ public class MainActivity extends AppCompatActivity implements Observer{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        Log.e(LOG,"MainActivity destroyed");
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
 }

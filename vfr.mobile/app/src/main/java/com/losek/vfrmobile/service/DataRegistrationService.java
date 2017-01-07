@@ -118,9 +118,9 @@ public class DataRegistrationService extends Service {
             cockpitGyroscopeFeature.removeFeatureLoggerListener(csvLogger);
             cockpitMagnetometerFeature.removeFeatureLoggerListener(csvLogger);
 
-            cockpitTag.disableNotification(cockpitAccelerometerFeature);
+           /* cockpitTag.disableNotification(cockpitAccelerometerFeature);
             cockpitTag.disableNotification(cockpitGyroscopeFeature);
-            cockpitTag.disableNotification(cockpitMagnetometerFeature);
+            cockpitTag.disableNotification(cockpitMagnetometerFeature);*/
 
             Log.d(LOG, "Removed listener for cockpit tag features");
 
@@ -130,10 +130,10 @@ public class DataRegistrationService extends Service {
             helmetGyroscopeFeature.removeFeatureLoggerListener(csvLogger);
             helmetAccelerometerFeature.removeFeatureLoggerListener(csvLogger);
             helmetMagnetometerFeature.removeFeatureLoggerListener(csvLogger);
-
+/*
             helmetTag.disableNotification(helmetGyroscopeFeature);
             helmetTag.disableNotification(helmetAccelerometerFeature);
-            helmetTag.disableNotification(helmetMagnetometerFeature);
+            helmetTag.disableNotification(helmetMagnetometerFeature);*/
 
             Log.d(LOG, "Removed listener for helmet tag features");
 

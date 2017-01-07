@@ -102,7 +102,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             selectedNode.disconnect();
-                            appVariables.unpairNode(selectedNode);
+                            //appVariables.unpairNode(selectedNode);
                             return;
                         }
                     })
@@ -153,7 +153,14 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
 
                 if (newState.equals(Node.State.Connected)) {
                     Log.e(LOG, prevState.toString() + " -> CONNECTED : connected after dying!");
-                    appVariables.setCockpitTag(node);
+                    switch (appVariables.getPairedAttributeName(node)) {
+                        case "helmet":
+                            appVariables.setHelmetTag(node);
+                            break;
+                        case "cockpit":
+                            appVariables.setCockpitTag(node);
+                            break;
+                    };
                 }
 
                 if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Connected)) {
@@ -169,7 +176,6 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
 
                 if (newState.equals(Node.State.Dead)) {
                     Log.e(LOG, prevState.toString() + " -> DEAD : attempt to disconnect");
-                    //node.disconnect();
                     if (appVariables.isNodePaired(node)) {
                         if (node.equals(appVariables.getHelmetTag())) {
                             Log.d(LOG, "Unpaired helmet because of node lost!");
@@ -204,6 +210,9 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
             }
             if (newState.equals(Node.State.Unreachable)) {
                 Log.e(LOG, prevState.toString() + " -> UNREACHABLE : attempt to disconnect");
+            }
+            if (newState.equals(Node.State.Init)) {
+                Log.e(LOG, prevState.toString() + " -> Init : attempt to disconnect");
             }
         }
     };
