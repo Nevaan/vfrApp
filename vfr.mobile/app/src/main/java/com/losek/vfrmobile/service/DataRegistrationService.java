@@ -36,8 +36,8 @@ public class DataRegistrationService extends Service {
     private Feature helmetAccelerometerFeature;
     private Feature helmetMagnetometerFeature;
 
-    Node cockpitTag;
-    Node helmetTag;
+    private Node cockpitTag;
+    private Node helmetTag;
 
     @Nullable
     @Override

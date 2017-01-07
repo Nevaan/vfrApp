@@ -61,17 +61,6 @@ public class VfrApplication extends Application {
         observers.remove(o);
         Log.d(LOG,"Removing observer of vfr application class, count: " + observers.size());
     }
-/*
-    public void unpairNode(Node node) {
-       if(node.equals(helmetTag)){
-           setHelmetTag(null);
-           return;
-       }
-       if(node.equals(cockpitTag)) {
-           setCockpitTag(null);
-           return;
-       }
-    }*/
 
     @NonNull
     public static String getPairedAttributeName(Node node) {

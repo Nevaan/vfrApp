@@ -33,7 +33,6 @@
             android:name=".service.DataRegistrationService"
             android:enabled="true" />
 
-        <activity android:name=".activity.RecordingsHistoryActivity"></activity>
     </application>
 
 </manifest>

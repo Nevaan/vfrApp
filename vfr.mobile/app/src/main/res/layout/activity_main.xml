@@ -193,19 +193,8 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:text="@string/export_data"
-                android:layout_height="wrap_content"
-                android:id="@+id/export_button"
-                tools:layout_editor_absoluteY="406dp"
-                android:layout_width="154dp"
-                tools:layout_editor_absoluteX="30dp"
-                android:layout_weight="1"
-                style="@style/mainButtons"
-                android:onClick="exportData"/>
-
-            <Button
                 android:text="@string/current_reads"
-                android:layout_width="154dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/current_reads_button"
                 tools:layout_editor_absoluteY="406dp"

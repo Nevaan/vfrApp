@@ -145,11 +145,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         startActivity(intent);
     }
 
-    public void exportData(View view) {
-        Intent intent = new Intent(this, RecordingsHistoryActivity.class);
-        startActivity(intent);
-    }
-
     public void initializeTagNames() {
         final TextView cockpitTagTextView = (TextView) findViewById(R.id.activity_main_cockpit_tag_value);
         final TextView helmetTagTextView = (TextView) findViewById(R.id.activity_main_helmet_tag_value);
@@ -166,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 if (cockpitNode != null) {
                     cockpitTagTextView.setText(cockpitNode.getFriendlyName());
                     cockpitPairButton.setText(R.string.unpair_button);
+                    startRegistering.setEnabled(true);
                     currentReads.setEnabled(true);
                 } else {
                     cockpitTagTextView.setText("Not paired yet!");
@@ -175,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 if (helmetNode != null) {
                     helmetTagTextView.setText(helmetNode.getFriendlyName());
                     helmetPairButton.setText(R.string.unpair_button);
+                    startRegistering.setEnabled(true);
                     currentReads.setEnabled(true);
                 } else {
                     helmetTagTextView.setText("Not paired yet!");
@@ -183,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
                 if(cockpitNode == null && helmetNode == null) {
                     currentReads.setEnabled(false);
+                    startRegistering.setEnabled(false);
                 }
             }
         });
@@ -203,5 +201,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
     }
 }

@@ -31,6 +31,8 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
     private String currentTag;
     private VfrApplication appVariables;
 
+
+    //TODO: co jak node zniknie?
     private Manager.ManagerListener mUpdateDiscoverGui = new Manager.ManagerListener() {
         @Override
         public void onDiscoveryChange(Manager m, boolean enabled) {
@@ -85,7 +87,6 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
         } else {
             super.startNodeDiscovery(timeoutMs);
             startScan.setText(R.string.stop_scan);
-            invalidateOptionsMenu();
         }
     }
 
@@ -130,7 +131,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                         appVariables.setCockpitTag(selectedNode);
                         break;
                     default:
-                        System.out.println("Error! I dont know what tag to pair");
+                        Log.e(LOG,"Something went badly wrong, don't know which tag to pair");
                 }
                 selectedNode.connect(getApplicationContext());
                 selectedNode.addNodeStateListener(stateListener);
@@ -187,7 +188,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                         }
 
                     }
-                    Log.e("VfrApp", "Node lost completely");
+                    Log.e(LOG, "Node lost completely");
                 }
 
             if ((prevState.equals(Node.State.Connected) || prevState.equals(Node.State.Connecting)) && newState.equals(Node.State.Dead)) {
