@@ -64,25 +64,31 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     }
 
-    public void pairCockpitTag(View view) {
-        if (pairCockpitTag.getText().equals(getResources().getString(R.string.pair_button))) {
-            Intent intent = new Intent(this, ScanDevicesActivity.class);
-            intent.putExtra("tag", "cockpitTag");
-            startActivity(intent);
-        } else {
-            VfrApplication.getCockpitTag().disconnect();
-            vfrApp.setCockpitTag(null);
-        }
-    }
+    public void pairTag(View view) {
 
-    public void pairHelmetTag(View view) {
-        if (pairHelmetTag.getText().equals(getResources().getString(R.string.pair_button))) {
+        String tag = "";
+
+        switch(view.getId()) {
+            case R.id.activity_main_cockpit_pair_button:
+                tag = "cockpitTag";
+                break;
+            case R.id.activity_main_helmet_pair_button:
+                tag = "helmetTag";
+        }
+
+        if (((Button) view).getText().equals(getResources().getString(R.string.pair_button))) {
             Intent intent = new Intent(this, ScanDevicesActivity.class);
-            intent.putExtra("tag", "helmetTag");
+            intent.putExtra("tag", tag);
             startActivity(intent);
         } else {
-            VfrApplication.getHelmetTag().disconnect();
-            vfrApp.setHelmetTag(null);
+            if(tag.equals("cockpitTag")) {
+                VfrApplication.getCockpitTag().disconnect();
+                vfrApp.setCockpitTag(null);
+            }
+            if(tag.equals("helmetTag")) {
+                VfrApplication.getHelmetTag().disconnect();
+                vfrApp.setHelmetTag(null);
+            }
         }
     }
 

@@ -62,40 +62,45 @@ public class LiveDataActivity extends AppCompatActivity {
 
         initializeNames();
 
-        gyroscopeFeature = vfrApp.getCockpitTag().getFeature(FeatureGyroscope.class);
-        accelerometerFeature = vfrApp.getCockpitTag().getFeature(FeatureAcceleration.class);
-        magnetometerFeature = vfrApp.getCockpitTag().getFeature(FeatureMagnetometer.class);
-        batteryFeature = vfrApp.getCockpitTag().getFeature(FeatureBattery.class);
+        if(vfrApp.getCockpitTag() != null) {
+            gyroscopeFeature = vfrApp.getCockpitTag().getFeature(FeatureGyroscope.class);
+            accelerometerFeature = vfrApp.getCockpitTag().getFeature(FeatureAcceleration.class);
+            magnetometerFeature = vfrApp.getCockpitTag().getFeature(FeatureMagnetometer.class);
+            batteryFeature = vfrApp.getCockpitTag().getFeature(FeatureBattery.class);
 
-        gyroXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_gyro_x_val));
-        accXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_acc_x_val));
-        magXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_magneto_x_val));
+            gyroXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_gyro_x_val));
+            accXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_acc_x_val));
+            magXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_magneto_x_val));
 
 
-        gyroYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_gyro_y_val));
-        accYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_acc_y_val));
-        magYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_magneto_y_val));
+            gyroYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_gyro_y_val));
+            accYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_acc_y_val));
+            magYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_magneto_y_val));
 
-        gyroZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_gyro_z_val));
-        accZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_acc_z_val));
-        magZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_magneto_z_val));
+            gyroZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_gyro_z_val));
+            accZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_acc_z_val));
+            magZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_magneto_z_val));
 
-        batteryListener = new GenericFragmentUpdate(Characteristic.BATTERY, (TextView) findViewById(R.id.live_data_battery_val));
+            batteryListener = new GenericFragmentUpdate(Characteristic.BATTERY, (TextView) findViewById(R.id.live_data_battery_val));
 
-        gyroscopeFeature.addFeatureListener(gyroXListener);
-        gyroscopeFeature.addFeatureListener(gyroYListener);
-        gyroscopeFeature.addFeatureListener(gyroZListener);
+            gyroscopeFeature.addFeatureListener(gyroXListener);
+            gyroscopeFeature.addFeatureListener(gyroYListener);
+            gyroscopeFeature.addFeatureListener(gyroZListener);
 
-        accelerometerFeature.addFeatureListener(accXListener);
-        accelerometerFeature.addFeatureListener(accYListener);
-        accelerometerFeature.addFeatureListener(accZListener);
+            accelerometerFeature.addFeatureListener(accXListener);
+            accelerometerFeature.addFeatureListener(accYListener);
+            accelerometerFeature.addFeatureListener(accZListener);
 
-        magnetometerFeature.addFeatureListener(magXListener);
-        magnetometerFeature.addFeatureListener(magYListener);
-        magnetometerFeature.addFeatureListener(magZListener);
+            magnetometerFeature.addFeatureListener(magXListener);
+            magnetometerFeature.addFeatureListener(magYListener);
+            magnetometerFeature.addFeatureListener(magZListener);
 
-        batteryFeature.addFeatureListener(batteryListener);
+            batteryFeature.addFeatureListener(batteryListener);
+        }
 
+        if(vfrApp.getHelmetTag() != null) {
+//TODO: Helmet tag
+        }
 /*        vfrApp.getCockpitTag().enableNotification(gyroscopeFeature);
         vfrApp.getCockpitTag().enableNotification(accelerometerFeature);
         vfrApp.getCockpitTag().enableNotification(batteryFeature);*/
