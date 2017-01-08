@@ -1,7 +1,5 @@
 package com.losek.vfrmobile.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -85,8 +83,15 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
             super.stopNodeDiscovery();
             startScan.setText(R.string.start_button);
         } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    devicesListAdapter.clear();
+                    mManager.resetDiscovery();
+                    startScan.setText(R.string.stop_scan);
+                }
+            });
             super.startNodeDiscovery(timeoutMs);
-            startScan.setText(R.string.stop_scan);
         }
     }
 
@@ -94,8 +99,8 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l) {
 
-        final Node selectedNode = devicesListAdapter.getItem(position);
 
+/*
         if (selectedNode.isConnected()) {
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ScanDevicesActivity.this);
             dialogBuilder.setMessage(R.string.paired_device_dialog_prompt).setCancelable(false)
@@ -119,22 +124,20 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
             alert.show();
 
             return;
-        }
+        }*/
+        final Node selectedNode = devicesListAdapter.getItem(position);
         Thread getListItemThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                selectedNode.connect(getApplicationContext());
+                selectedNode.addNodeStateListener(stateListener);
                 switch (currentTag) {
                     case "helmetTag":
                         appVariables.setHelmetTag(selectedNode);
                         break;
                     case "cockpitTag":
                         appVariables.setCockpitTag(selectedNode);
-                        break;
-                    default:
-                        Log.e(LOG,"Something went badly wrong, don't know which tag to pair");
                 }
-                selectedNode.connect(getApplicationContext());
-                selectedNode.addNodeStateListener(stateListener);
                 mManager.stopDiscovery();
                 ScanDevicesActivity.this.finish();
             }
@@ -199,7 +202,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                 } else {
                     Log.e(LOG, "Node connected again");
                 }
-            }
+            }/*
             if (newState.equals(Node.State.Disconnecting)) {
                 Log.e(LOG, prevState.toString() + " -> DISCONNECTING : attempt to disconnect");
             }
@@ -214,7 +217,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
             }
             if (newState.equals(Node.State.Init)) {
                 Log.e(LOG, prevState.toString() + " -> Init : attempt to disconnect");
-            }
+            }*/
         }
     };
 

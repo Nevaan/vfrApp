@@ -27,9 +27,11 @@ public class VfrApplication extends Application {
     }
 
     public void setCockpitTag(Node cockpitTag) {
-        Log.d(LOG, "Setting cockpit tag to " + cockpitTag);
-        this.cockpitTag = cockpitTag;
-        updateObservers();
+        synchronized (this) {
+            Log.d(LOG, "Setting cockpit tag to " + cockpitTag);
+            this.cockpitTag = cockpitTag;
+            updateObservers();
+        }
     }
 
     public static Node getHelmetTag() {
@@ -37,8 +39,10 @@ public class VfrApplication extends Application {
     }
 
     public void setHelmetTag(Node helmetTag) {
-        this.helmetTag = helmetTag;
-        updateObservers();
+        synchronized (this) {
+            this.helmetTag = helmetTag;
+            updateObservers();
+        }
     }
 
     public boolean isNodePaired(Node node) {
@@ -71,6 +75,19 @@ public class VfrApplication extends Application {
             return "cockpit";
         }
         return "";
+    }
+
+    public void unsetTag(Node node) {
+        if(isNodePaired(node)) {
+            if (node.equals(helmetTag)) {
+                Log.d(LOG, "Unpaired helmet because of node lost!");
+                setHelmetTag(null);
+            }
+            if (node.equals(cockpitTag)) {
+                Log.d(LOG, "Unpaired cockpit because of node lost!");
+                setCockpitTag(null);
+            }
+        }
     }
 
 

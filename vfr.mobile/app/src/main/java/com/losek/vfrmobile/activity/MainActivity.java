@@ -59,13 +59,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
         }
-        initializeTagNames();
+        updateTagNames();
         vfrApp.addObserver(this);
 
     }
 
-    public void pairTag(View view) {
-
+    public void pairTagButtonHandler(View view) {
         String tag = "";
 
         switch(view.getId()) {
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 Snackbar.make(findViewById(android.R.id.content),
-                        "Please Grant Permissions",
+                        "Application do not have permission to save recordings, please grant to use this functionality.",
                         Snackbar.LENGTH_INDEFINITE).setAction("ENABLE",
                         new View.OnClickListener() {
                             @Override
@@ -116,14 +115,13 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         REQUEST_PERMISSIONS);
             }
         } else {
-            //Call whatever you want
+            Intent serviceIntent = new Intent(this, DataRegistrationService.class);
+            startService(serviceIntent);
+
+            startRegistering.setEnabled(false);
+            stopRegistering.setEnabled(true);
         }
 
-        Intent serviceIntent = new Intent(this, DataRegistrationService.class);
-        startService(serviceIntent);
-
-        startRegistering.setEnabled(false);
-        stopRegistering.setEnabled(true);
     }
 
     public void stopRegistering(View view) {
@@ -131,10 +129,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         stopService(serviceIntent);
 
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath());
-        File[] files = f.listFiles();
-        for (File filen : files) {
-            Uri contentUri = Uri.fromFile(filen);
+        File documentsDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath());
+        File[] documentDirectoryContent = documentsDirectory.listFiles();
+        for (File file : documentDirectoryContent) {
+            Uri contentUri = Uri.fromFile(file);
             mediaScanIntent.setData(contentUri);
             this.sendBroadcast(mediaScanIntent);
         }
@@ -151,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         startActivity(intent);
     }
 
-    public void initializeTagNames() {
+    public void updateTagNames() {
         final TextView cockpitTagTextView = (TextView) findViewById(R.id.activity_main_cockpit_tag_value);
         final TextView helmetTagTextView = (TextView) findViewById(R.id.activity_main_helmet_tag_value);
         final Button cockpitPairButton = (Button) findViewById(R.id.activity_main_cockpit_pair_button);
@@ -199,14 +197,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                initializeTagNames();
+                updateTagNames();
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
 }

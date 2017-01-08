@@ -13,7 +13,6 @@ import com.st.BlueSTSDK.Features.FeatureAcceleration;
 import com.st.BlueSTSDK.Features.FeatureBattery;
 import com.st.BlueSTSDK.Features.FeatureGyroscope;
 import com.st.BlueSTSDK.Features.FeatureMagnetometer;
-import com.st.BlueSTSDK.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +54,9 @@ public class LiveDataActivity extends AppCompatActivity {
         devicesList.add("WeSU 1");
         devicesList.add("WeSu 2");
         Spinner s = (Spinner) findViewById(R.id.live_data_select_device);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, devicesList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, devicesList);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         s.setAdapter(adapter);
-
-
-        initializeNames();
 
         if(vfrApp.getCockpitTag() != null) {
             gyroscopeFeature = vfrApp.getCockpitTag().getFeature(FeatureGyroscope.class);
@@ -68,20 +64,20 @@ public class LiveDataActivity extends AppCompatActivity {
             magnetometerFeature = vfrApp.getCockpitTag().getFeature(FeatureMagnetometer.class);
             batteryFeature = vfrApp.getCockpitTag().getFeature(FeatureBattery.class);
 
-            gyroXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_gyro_x_val));
-            accXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_acc_x_val));
-            magXListener = new GenericFragmentUpdate(Characteristic.X, (TextView) findViewById(R.id.live_data_magneto_x_val));
+            gyroXListener = new GenericFeatureListener(Characteristic.X, (TextView) findViewById(R.id.live_data_gyro_x_val));
+            accXListener = new GenericFeatureListener(Characteristic.X, (TextView) findViewById(R.id.live_data_acc_x_val));
+            magXListener = new GenericFeatureListener(Characteristic.X, (TextView) findViewById(R.id.live_data_magneto_x_val));
 
 
-            gyroYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_gyro_y_val));
-            accYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_acc_y_val));
-            magYListener = new GenericFragmentUpdate(Characteristic.Y, (TextView) findViewById(R.id.live_data_magneto_y_val));
+            gyroYListener = new GenericFeatureListener(Characteristic.Y, (TextView) findViewById(R.id.live_data_gyro_y_val));
+            accYListener = new GenericFeatureListener(Characteristic.Y, (TextView) findViewById(R.id.live_data_acc_y_val));
+            magYListener = new GenericFeatureListener(Characteristic.Y, (TextView) findViewById(R.id.live_data_magneto_y_val));
 
-            gyroZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_gyro_z_val));
-            accZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_acc_z_val));
-            magZListener = new GenericFragmentUpdate(Characteristic.Z, (TextView) findViewById(R.id.live_data_magneto_z_val));
+            gyroZListener = new GenericFeatureListener(Characteristic.Z, (TextView) findViewById(R.id.live_data_gyro_z_val));
+            accZListener = new GenericFeatureListener(Characteristic.Z, (TextView) findViewById(R.id.live_data_acc_z_val));
+            magZListener = new GenericFeatureListener(Characteristic.Z, (TextView) findViewById(R.id.live_data_magneto_z_val));
 
-            batteryListener = new GenericFragmentUpdate(Characteristic.BATTERY, (TextView) findViewById(R.id.live_data_battery_val));
+            batteryListener = new GenericFeatureListener(Characteristic.BATTERY, (TextView) findViewById(R.id.live_data_battery_val));
 
             gyroscopeFeature.addFeatureListener(gyroXListener);
             gyroscopeFeature.addFeatureListener(gyroYListener);
@@ -106,25 +102,12 @@ public class LiveDataActivity extends AppCompatActivity {
         vfrApp.getCockpitTag().enableNotification(batteryFeature);*/
     }
 
-
-    private void initializeNames(){
-        //TextView cockpitTagTextView = (TextView) findViewById(R.id.cockpitTagNameLabel);
-
-        Node cockpitNode = vfrApp.getCockpitTag();
-
-//        if(cockpitNode != null) {
-  //          cockpitTagTextView.setText(cockpitNode.getFriendlyName());
-    //    } else {
-      //      cockpitTagTextView.setText("Cockpit device is not chosen!");
-        //}
-    }
-
-    private class GenericFragmentUpdate implements Feature.FeatureListener {
+    private class GenericFeatureListener implements Feature.FeatureListener {
 
         final private TextView mTextView;
         final private Characteristic characteristic;
 
-        public GenericFragmentUpdate(Characteristic c, TextView text) {
+        public GenericFeatureListener(Characteristic c, TextView text) {
             characteristic = c;
             mTextView = text;
         }
@@ -146,7 +129,7 @@ public class LiveDataActivity extends AppCompatActivity {
                     value = sample.data[0].toString() + "%";
                     break;
                 default:
-                        value = "";
+                    value="";
             }
             LiveDataActivity.this.runOnUiThread(new Runnable() {
                 @Override

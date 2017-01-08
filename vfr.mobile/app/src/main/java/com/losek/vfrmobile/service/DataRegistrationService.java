@@ -49,7 +49,7 @@ public class DataRegistrationService extends Service {
     public void onCreate() {
         Log.d(LOG, "Service created");
 
-        String s = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath();
+        String documentsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath();
 
         cockpitTag = VfrApplication.getCockpitTag();
         helmetTag = VfrApplication.getHelmetTag();
@@ -61,27 +61,18 @@ public class DataRegistrationService extends Service {
         if(helmetTag != null)
             nodes.add(helmetTag);
 
-        csvLogger = new FeatureLogCSVFile(s, nodes);
+        csvLogger = new FeatureLogCSVFile(documentsDirectoryPath, nodes);
 
         if(cockpitTag!=null) {
             cockpitGyroscopeFeature = cockpitTag.getFeature(FeatureGyroscope.class);
             cockpitAccelerometerFeature = cockpitTag.getFeature(FeatureAcceleration.class);
             cockpitMagnetometerFeature = cockpitTag.getFeature(FeatureMagnetometer.class);
-
-       /*     cockpitTag.enableNotification(cockpitAccelerometerFeature);
-            cockpitTag.enableNotification(cockpitGyroscopeFeature);
-            cockpitTag.enableNotification(cockpitMagnetometerFeature);*/
         }
 
         if(helmetTag != null) {
             helmetGyroscopeFeature = helmetTag.getFeature(FeatureGyroscope.class);
             helmetAccelerometerFeature = helmetTag.getFeature(FeatureAcceleration.class);
             helmetMagnetometerFeature = helmetTag.getFeature(FeatureMagnetometer.class);
-
-/*            helmetTag.enableNotification(helmetGyroscopeFeature);
-            helmetTag.enableNotification(helmetAccelerometerFeature);
-            helmetTag.enableNotification(helmetMagnetometerFeature);*/
-
         }
     }
 
@@ -93,7 +84,6 @@ public class DataRegistrationService extends Service {
             cockpitAccelerometerFeature.addFeatureLoggerListener(csvLogger);
             cockpitGyroscopeFeature.addFeatureLoggerListener(csvLogger);
             cockpitMagnetometerFeature.addFeatureLoggerListener(csvLogger);
-
             Log.d(LOG, "Added listener for cockpit tag features");
         }
 
@@ -104,9 +94,6 @@ public class DataRegistrationService extends Service {
             Log.d(LOG, "Added listener for helmet tag features");
 
         }
-
-
-
         return START_STICKY;
     }
 
@@ -118,10 +105,6 @@ public class DataRegistrationService extends Service {
             cockpitGyroscopeFeature.removeFeatureLoggerListener(csvLogger);
             cockpitMagnetometerFeature.removeFeatureLoggerListener(csvLogger);
 
-           /* cockpitTag.disableNotification(cockpitAccelerometerFeature);
-            cockpitTag.disableNotification(cockpitGyroscopeFeature);
-            cockpitTag.disableNotification(cockpitMagnetometerFeature);*/
-
             Log.d(LOG, "Removed listener for cockpit tag features");
 
         }
@@ -130,11 +113,6 @@ public class DataRegistrationService extends Service {
             helmetGyroscopeFeature.removeFeatureLoggerListener(csvLogger);
             helmetAccelerometerFeature.removeFeatureLoggerListener(csvLogger);
             helmetMagnetometerFeature.removeFeatureLoggerListener(csvLogger);
-/*
-            helmetTag.disableNotification(helmetGyroscopeFeature);
-            helmetTag.disableNotification(helmetAccelerometerFeature);
-            helmetTag.disableNotification(helmetMagnetometerFeature);*/
-
             Log.d(LOG, "Removed listener for helmet tag features");
 
         }
