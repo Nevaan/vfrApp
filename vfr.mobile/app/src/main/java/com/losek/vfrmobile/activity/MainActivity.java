@@ -83,10 +83,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
             if(tag.equals("cockpitTag")) {
                 VfrApplication.getCockpitTag().disconnect();
                 vfrApp.setCockpitTag(null);
+                VfrApplication.setCockpitTagFriendlyName("");
             }
             if(tag.equals("helmetTag")) {
                 VfrApplication.getHelmetTag().disconnect();
                 vfrApp.setHelmetTag(null);
+                VfrApplication.setHelmetTagFriendlyName("");
             }
         }
     }

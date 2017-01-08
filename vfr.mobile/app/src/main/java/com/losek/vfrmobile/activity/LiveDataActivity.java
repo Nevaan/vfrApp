@@ -48,7 +48,7 @@ public class LiveDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_data_registration);
+        setContentView(R.layout.activity_live_data);
         vfrApp = (VfrApplication) getApplication();
 
         devicesList.add("WeSU 1");

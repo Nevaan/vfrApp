@@ -19,19 +19,21 @@ public class VfrApplication extends Application {
     private static final String LOG = "VfrApplication";
 
     private static Set<Observer> observers = new HashSet<>();
+    private static String cockpitTagFriendlyName;
+    private static String helmetTagFriendlyName;
     private static Node cockpitTag;
     private static Node helmetTag;
+
 
     public static Node getCockpitTag() {
         return cockpitTag;
     }
 
     public void setCockpitTag(Node cockpitTag) {
-        synchronized (this) {
             Log.d(LOG, "Setting cockpit tag to " + cockpitTag);
             this.cockpitTag = cockpitTag;
             updateObservers();
-        }
+
     }
 
     public static Node getHelmetTag() {
@@ -39,10 +41,17 @@ public class VfrApplication extends Application {
     }
 
     public void setHelmetTag(Node helmetTag) {
-        synchronized (this) {
             this.helmetTag = helmetTag;
             updateObservers();
-        }
+
+    }
+
+    public static void setCockpitTagFriendlyName(String cockpitTagFriendlyName) {
+        VfrApplication.cockpitTagFriendlyName = cockpitTagFriendlyName;
+    }
+
+    public static void setHelmetTagFriendlyName(String helmetTagFriendlyName) {
+        VfrApplication.helmetTagFriendlyName = helmetTagFriendlyName;
     }
 
     public boolean isNodePaired(Node node) {
@@ -68,26 +77,13 @@ public class VfrApplication extends Application {
 
     @NonNull
     public static String getPairedAttributeName(Node node) {
-        if(node.equals(helmetTag)){
+        if(node.getFriendlyName().equals(helmetTagFriendlyName)){
             return "helmet";
         }
-        if(node.equals(cockpitTag)) {
+        if(node.getFriendlyName().equals(cockpitTagFriendlyName)) {
             return "cockpit";
         }
-        return "";
-    }
-
-    public void unsetTag(Node node) {
-        if(isNodePaired(node)) {
-            if (node.equals(helmetTag)) {
-                Log.d(LOG, "Unpaired helmet because of node lost!");
-                setHelmetTag(null);
-            }
-            if (node.equals(cockpitTag)) {
-                Log.d(LOG, "Unpaired cockpit because of node lost!");
-                setCockpitTag(null);
-            }
-        }
+        return "ERROR";
     }
 
 

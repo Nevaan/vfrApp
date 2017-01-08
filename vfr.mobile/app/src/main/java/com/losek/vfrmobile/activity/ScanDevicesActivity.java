@@ -134,9 +134,11 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                 switch (currentTag) {
                     case "helmetTag":
                         appVariables.setHelmetTag(selectedNode);
+                        VfrApplication.setHelmetTagFriendlyName(selectedNode.getFriendlyName());
                         break;
                     case "cockpitTag":
                         appVariables.setCockpitTag(selectedNode);
+                        VfrApplication.setCockpitTagFriendlyName(selectedNode.getFriendlyName());
                 }
                 mManager.stopDiscovery();
                 ScanDevicesActivity.this.finish();
@@ -159,11 +161,15 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                     Log.e(LOG, prevState.toString() + " -> CONNECTED : connected after dying!");
                     switch (appVariables.getPairedAttributeName(node)) {
                         case "helmet":
+                            Log.e(LOG,"setting helmetTag");
                             appVariables.setHelmetTag(node);
                             break;
                         case "cockpit":
+                            Log.e(LOG,"settingCockpitTag");
                             appVariables.setCockpitTag(node);
                             break;
+                        default:
+                            Log.e(LOG,"o o! tu jest nasz problem");
                     };
                 }
 
@@ -195,17 +201,16 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                 }
 
             if ((prevState.equals(Node.State.Connected) || prevState.equals(Node.State.Connecting)) && newState.equals(Node.State.Dead)) {
-                Log.e(LOG, prevState.toString() + " -> DEAD: Node Lost!!!");
+                Log.e(LOG, prevState.toString() + " -> DEAD: Node Lost!!!, calling .connect");
                 node.connect(getApplicationContext());
                 if (!node.isConnected()) {
 
                 } else {
                     Log.e(LOG, "Node connected again");
                 }
-            }/*
-            if (newState.equals(Node.State.Disconnecting)) {
-                Log.e(LOG, prevState.toString() + " -> DISCONNECTING : attempt to disconnect");
             }
+
+            /*
             if (newState.equals(Node.State.Idle)) {
                 Log.e(LOG, prevState.toString() + " -> IDLE : attempt to disconnect");
             }

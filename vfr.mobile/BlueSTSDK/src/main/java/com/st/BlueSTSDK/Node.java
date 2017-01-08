@@ -738,7 +738,7 @@ public class Node{
                     mCharacteristicWriteQueue.clear();
                 }
             }
-            if(newState==State.Dead  || newState==State.Disconnecting){
+            if(newState==State.Dead  /*|| newState==State.Disconnecting*/){
                 if(mBoundStateChange !=null) {
                     //clean the broadcast receiver
                     mContext.getApplicationContext().unregisterReceiver(mBoundStateChange);
