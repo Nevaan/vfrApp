@@ -46,16 +46,16 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
             TextView tt2 = (TextView) v.findViewById(R.id.deviceAddress);
 
             if (tt1 != null) {
-                tt1.setText(p.getName());
-            }
-
-            if (tt2 != null) {
                 String name = p.getFriendlyName();
                 if(p.isConnected()){
                     name = name.concat(" (paired as "+ VfrApplication.getPairedAttributeName(p) + ")");
                     v.setEnabled(false);
                 }
-                tt2.setText(name);
+                tt1.setText(name);
+            }
+
+            if (tt2 != null) {
+                tt2.setText(p.getTag());
             }
         }
 

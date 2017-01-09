@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         } else {
             Intent serviceIntent = new Intent(this, DataRegistrationService.class);
             startService(serviceIntent);
-
+getCallingActivity();
             startRegistering.setEnabled(false);
             stopRegistering.setEnabled(true);
         }
