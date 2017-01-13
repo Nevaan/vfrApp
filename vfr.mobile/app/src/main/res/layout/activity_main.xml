@@ -56,7 +56,8 @@
                 android:id="@+id/activity_main_cockpit_tag_value"
                 tools:layout_editor_absoluteY="106dp"
                 tools:layout_editor_absoluteX="16dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Not paired yet!" />
         </LinearLayout>
 
         <Button
@@ -109,7 +110,9 @@
                 android:id="@+id/activity_main_helmet_tag_value"
                 tools:layout_editor_absoluteY="170dp"
                 tools:layout_editor_absoluteX="16dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Not paired yet!"
+                android:textAlignment="textStart" />
         </LinearLayout>
 
         <Button

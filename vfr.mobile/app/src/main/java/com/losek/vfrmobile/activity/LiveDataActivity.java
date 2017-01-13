@@ -2,6 +2,7 @@ package com.losek.vfrmobile.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -104,6 +105,7 @@ public class LiveDataActivity extends AppCompatActivity{
         }
 
         if(vfrApp.getHelmetTag() != null) {
+
             helmetGyroscopeFeature = vfrApp.getHelmetTag().getFeature(FeatureGyroscope.class);
             helmetAccelerometerFeature = vfrApp.getHelmetTag().getFeature(FeatureAcceleration.class);
             helmetMagnetometerFeature = vfrApp.getHelmetTag().getFeature(FeatureMagnetometer.class);
@@ -167,7 +169,6 @@ public class LiveDataActivity extends AppCompatActivity{
                 }
 
                 if(position == 1 && vfrApp.getHelmetTag() != null) {
-//TODO: Helmet tag
                     if(cockpitGyroXListener != null) cockpitGyroscopeFeature.removeFeatureListener(cockpitGyroXListener);
                     if(cockpitGyroYListener != null)cockpitGyroscopeFeature.removeFeatureListener(cockpitGyroYListener);
                     if(cockpitGyroZListener != null)cockpitGyroscopeFeature.removeFeatureListener(cockpitGyroZListener);
@@ -210,9 +211,18 @@ public class LiveDataActivity extends AppCompatActivity{
             }
         });
 
+
     }
 
 
+    // kill activity on exit
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == android.view.KeyEvent.KEYCODE_BACK)) {
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     private class GenericFeatureListener implements Feature.FeatureListener {
 

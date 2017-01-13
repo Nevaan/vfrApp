@@ -11,10 +11,10 @@
     <string name="scan_for_devices">Start scan</string>
     <string name="device_already_connected">You already selected that device!</string>
     <string name="cockpit_tag_register_text">Cockpit Tag</string>
-    <string name="paired_device_dialog_prompt">This device is already paired. Do you want to unbind it?</string>
+    <string name="node_unreachable_dialog">At least one of nodes became unreachable. If you were registering data, process was stopped and from now data will not be saved.</string>
     <string name="yes_text">Yes</string>
     <string name="no_text">No</string>
-    <string name="unpair_device_dialog_title">Unpair device</string>
+    <string name="node_unreachable_title">Connection with node lost!</string>
     <string name="gyroscope_label">Gyroscope</string>
     <string name="accelerometer_label">Accelerometer</string>
     <string name="accelerometer">Accelerometer</string>
@@ -30,6 +30,7 @@
     <string name="stop_scan">Stop scanning</string>
     <string name="recordings_history_export_button_label">Button</string>
     <string name="recordings_history_saved_flights_label">Saved flights</string>
+    <string name="reconnect_attempt"> Attempting to reconnect lost node...</string>
     <!-- TESTING -->
 
 

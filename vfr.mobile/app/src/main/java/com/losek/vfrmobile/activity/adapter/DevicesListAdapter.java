@@ -47,7 +47,7 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
 
             if (tt1 != null) {
                 String name = p.getFriendlyName();
-                if(p.isConnected()){
+                if(VfrApplication.isNodePaired(p)){
                     name = name.concat(" (paired as "+ VfrApplication.getPairedAttributeName(p) + ")");
                     v.setEnabled(false);
                 }

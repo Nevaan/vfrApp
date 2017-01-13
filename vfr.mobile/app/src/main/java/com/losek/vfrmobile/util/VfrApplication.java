@@ -54,8 +54,11 @@ public class VfrApplication extends Application {
         VfrApplication.helmetTagFriendlyName = helmetTagFriendlyName;
     }
 
-    public boolean isNodePaired(Node node) {
-        return (node.equals(cockpitTag) || node.equals(helmetTag)) ? true : false;
+    public static boolean isNodePaired(Node node) {
+        if(node.getFriendlyName().equals(helmetTagFriendlyName)) return true;
+        if(node.getFriendlyName().equals(cockpitTagFriendlyName)) return true;
+
+        return false;
     }
 
     private void updateObservers() {

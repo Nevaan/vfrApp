@@ -1,6 +1,7 @@
 package com.losek.vfrmobile.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -10,7 +11,9 @@ import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,6 +41,51 @@ public class MainActivity extends AppCompatActivity implements Observer {
     Button pairHelmetTag;
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent != null)
+            setIntent(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Bundle bundle = getIntent().getExtras();
+
+        if(bundle != null) {
+            String unreachableNodeName = bundle.getString("unreachableNode");
+
+            if (unreachableNodeName != null) {
+                Log.e(LOG, "Stopped registering because of node unreachable");
+                Intent serviceIntent = new Intent(getApplicationContext(), MainActivity.class);
+                stopService(serviceIntent);
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                dialogBuilder.setMessage(R.string.node_unreachable_dialog).setCancelable(false)
+                        .setPositiveButton(R.string.yes_text, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                return;
+                            }
+                        });
+
+                AlertDialog alert = dialogBuilder.create();
+                alert.setTitle(getString(R.string.node_unreachable_title));
+                alert.show();
+            }
+
+            Boolean nodeReconnect = bundle.getBoolean("isReconnecting");
+
+            if(nodeReconnect) {
+                Log.d(LOG, "Trying to reconnect node");
+                Toast.makeText(this, R.string.reconnect_attempt, Toast.LENGTH_LONG).show();
+            }
+            getIntent().removeExtra("isReconnecting");
+            getIntent().removeExtra("unreachableNode");
+        }
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -48,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         liveDataButton = (Button) findViewById(R.id.current_reads_button);
         pairCockpitTag = (Button) findViewById(R.id.activity_main_cockpit_pair_button);
         pairHelmetTag = (Button) findViewById(R.id.activity_main_helmet_pair_button);
-
 
         startRegistering.setEnabled(false);
         stopRegistering.setEnabled(false);
@@ -119,9 +166,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
         } else {
             Intent serviceIntent = new Intent(this, DataRegistrationService.class);
             startService(serviceIntent);
-getCallingActivity();
+            getCallingActivity();
             startRegistering.setEnabled(false);
             stopRegistering.setEnabled(true);
+            pairCockpitTag.setEnabled(false);
+            pairHelmetTag.setEnabled(false);
         }
 
     }
@@ -141,6 +190,8 @@ getCallingActivity();
 
         startRegistering.setEnabled(true);
         stopRegistering.setEnabled(false);
+        pairCockpitTag.setEnabled(true);
+        pairHelmetTag.setEnabled(true);
     }
 
     public void showLiveData(View view) {

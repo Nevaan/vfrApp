@@ -1,5 +1,6 @@
 package com.losek.vfrmobile.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,8 +30,6 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
     private String currentTag;
     private VfrApplication appVariables;
 
-
-    //TODO: co jak node zniknie?
     private Manager.ManagerListener mUpdateDiscoverGui = new Manager.ManagerListener() {
         @Override
         public void onDiscoveryChange(Manager m, boolean enabled) {
@@ -67,7 +66,6 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
         devicesListView.setOnItemClickListener(this);
         mManager.resetDiscovery();
         devicesListAdapter.addAll(mManager.getNodes());
-
         appVariables = (VfrApplication) getApplication();
 
         Bundle bundle = getIntent().getExtras();
@@ -100,37 +98,18 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
     public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l) {
 
 
-/*
-        if (selectedNode.isConnected()) {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ScanDevicesActivity.this);
-            dialogBuilder.setMessage(R.string.paired_device_dialog_prompt).setCancelable(false)
-                    .setPositiveButton(R.string.yes_text, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            selectedNode.disconnect();
-                            //appVariables.unpairNode(selectedNode);
-                            return;
-                        }
-                    })
-                    .setNegativeButton(R.string.no_text, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-
-            AlertDialog alert = dialogBuilder.create();
-            alert.setTitle(getString(R.string.unpair_device_dialog_title));
-            alert.show();
-
-            return;
-        }*/
         final Node selectedNode = devicesListAdapter.getItem(position);
+
+        if(VfrApplication.isNodePaired(selectedNode)) {
+            return;
+        }
+
         Thread getListItemThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 selectedNode.connect(getApplicationContext());
                 selectedNode.addNodeStateListener(stateListener);
+
                 switch (currentTag) {
                     case "helmetTag":
                         appVariables.setHelmetTag(selectedNode);
@@ -186,6 +165,12 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
 
                 if (newState.equals(Node.State.Dead)) {
                     Log.e(LOG, prevState.toString() + " -> DEAD : attempt to disconnect");
+
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    intent.putExtra("isReconnecting",true);
+                    startActivity(intent);
+
                     if (appVariables.isNodePaired(node)) {
                         if (node.equals(appVariables.getHelmetTag())) {
                             Log.d(LOG, "Unpaired helmet because of node lost!");
@@ -203,26 +188,28 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
             if ((prevState.equals(Node.State.Connected) || prevState.equals(Node.State.Connecting)) && newState.equals(Node.State.Dead)) {
                 Log.e(LOG, prevState.toString() + " -> DEAD: Node Lost!!!, calling .connect");
                 node.connect(getApplicationContext());
-                if (!node.isConnected()) {
-
-                } else {
-                    Log.e(LOG, "Node connected again");
-                }
             }
 
-            /*
-            if (newState.equals(Node.State.Idle)) {
-                Log.e(LOG, prevState.toString() + " -> IDLE : attempt to disconnect");
+            if(prevState.equals(Node.State.Connecting) && (!newState.equals(Node.State.Connected) && !newState.equals(Node.State.Connecting))) {
+                Log.e(LOG, "Eureka");
+                node.disconnect();
             }
-            if (newState.equals(Node.State.Lost)) {
-                Log.e(LOG, prevState.toString() + " -> LOST : attempt to disconnect");
+
+            if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Disconnecting)) {
+                Log.e(LOG, "Suspicious disconnect");
             }
+
+            if(prevState.equals(Node.State.Connected) && newState.equals(Node.State.Disconnecting)) {
+                Log.e(LOG, "Normal disconnect");
+            }
+
             if (newState.equals(Node.State.Unreachable)) {
-                Log.e(LOG, prevState.toString() + " -> UNREACHABLE : attempt to disconnect");
+                Log.e(LOG, "Node out of control");
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.putExtra("unreachableNode",VfrApplication.getPairedAttributeName(node));
+                startActivity(intent);
             }
-            if (newState.equals(Node.State.Init)) {
-                Log.e(LOG, prevState.toString() + " -> Init : attempt to disconnect");
-            }*/
         }
     };
 
