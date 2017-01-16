@@ -1,6 +1,8 @@
 package com.losek.vfrmobile.activity;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -49,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onResume() {
         super.onResume();
-
         Bundle bundle = getIntent().getExtras();
 
         if(bundle != null) {
@@ -57,8 +58,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
             if (unreachableNodeName != null) {
                 Log.e(LOG, "Stopped registering because of node unreachable");
-                Intent serviceIntent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent serviceIntent = new Intent(getApplicationContext(), DataRegistrationService.class);
                 stopService(serviceIntent);
+                cleanupAfterRegister();
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
                 dialogBuilder.setMessage(R.string.node_unreachable_dialog).setCancelable(false)
                         .setPositiveButton(R.string.yes_text, new DialogInterface.OnClickListener() {
@@ -178,7 +180,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void stopRegistering(View view) {
         Intent serviceIntent = new Intent(this, DataRegistrationService.class);
         stopService(serviceIntent);
+        cleanupAfterRegister();
+    }
 
+    private void cleanupAfterRegister() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File documentsDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath());
         File[] documentDirectoryContent = documentsDirectory.listFiles();
@@ -215,10 +220,20 @@ public class MainActivity extends AppCompatActivity implements Observer {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                boolean isDataRegistrationServiceRunning = false;
+
+                ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                    if (DataRegistrationService.class.getName().equals(service.service.getClassName())) {
+                        isDataRegistrationServiceRunning = true;
+                    }
+                }
+
                 if (cockpitNode != null) {
                     cockpitTagTextView.setText(cockpitNode.getFriendlyName());
                     cockpitPairButton.setText(R.string.unpair_button);
-                    startRegistering.setEnabled(true);
+                    if (!isDataRegistrationServiceRunning) startRegistering.setEnabled(true);
                     currentReads.setEnabled(true);
                 } else {
                     cockpitTagTextView.setText("Not paired yet!");
@@ -228,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 if (helmetNode != null) {
                     helmetTagTextView.setText(helmetNode.getFriendlyName());
                     helmetPairButton.setText(R.string.unpair_button);
-                    startRegistering.setEnabled(true);
+                    if(!isDataRegistrationServiceRunning) startRegistering.setEnabled(true);
                     currentReads.setEnabled(true);
                 } else {
                     helmetTagTextView.setText("Not paired yet!");

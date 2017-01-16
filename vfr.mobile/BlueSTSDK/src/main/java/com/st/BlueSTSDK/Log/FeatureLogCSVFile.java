@@ -102,6 +102,8 @@ public class FeatureLogCSVFile extends FeatureLogBase {
         try {
             Formatter out = openDumpFile(feature);
             synchronized (out) { // be secure that only one call write on the file
+                out.format(Long.toString(System.currentTimeMillis()));
+                out.format(",");
                 out.format(Long.toString(data.notificationTime - mStartLog.getTime()));  //HostTimestamp
                 out.format(",");
                 out.format(feature.getParentNode().getFriendlyName()); //NodeName

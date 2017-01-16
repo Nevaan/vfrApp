@@ -61,6 +61,7 @@ public abstract class FeatureLogBase implements Feature.FeatureLoggerListener{
     protected static final String NODE_NAME_COLUMN ="NodeName";
     protected static final String NODE_TIMESTAMP_COLUMN ="NodeTimestamp";
     protected static final String NODE_RAW_DATA_COLUMN ="RawData";
+    public static final String UNIX_TIMESTAMP = "UNIX TIMESTAMP";
 
     /**
      * directory where save the dump file
@@ -92,7 +93,7 @@ public abstract class FeatureLogBase implements Feature.FeatureLoggerListener{
                 out.format(n.getFriendlyName() + ", ");
         out.format("\n");
 
-        out.format(HOST_TIMESTAMP_COLUMN + " (ms)," + NODE_NAME_COLUMN + "," + NODE_TIMESTAMP_COLUMN + "," +
+        out.format(UNIX_TIMESTAMP + " (ms)," + HOST_TIMESTAMP_COLUMN + " (ms)," + NODE_NAME_COLUMN + "," + NODE_TIMESTAMP_COLUMN + "," +
                 "" + NODE_RAW_DATA_COLUMN + ",");
         for(Field field:fields){
             out.format(field.getName());

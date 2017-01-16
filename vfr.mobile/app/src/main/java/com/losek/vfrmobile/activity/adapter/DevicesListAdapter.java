@@ -2,7 +2,6 @@ package com.losek.vfrmobile.activity.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +63,6 @@ public class DevicesListAdapter extends ArrayAdapter<Node> implements Manager.Ma
 
     @Override
     public void onDiscoveryChange(Manager m, boolean enabled) {
-        Log.e(LOG,"Discovery change!");
     }
 
     @Override

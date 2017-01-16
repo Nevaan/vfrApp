@@ -131,85 +131,73 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
         @Override
         public void onStateChange(final Node node, Node.State newState, Node.State prevState) {
 
+            if (newState.equals(Node.State.Connected)) {
+                switch (appVariables.getPairedAttributeName(node)) {
+                    case "helmet":
+                        Log.e(LOG,"setting helmetTag");
+                        appVariables.setHelmetTag(node);
+                        break;
+                    case "cockpit":
+                        Log.e(LOG,"settingCockpitTag");
+                        appVariables.setCockpitTag(node);
+                };
+            }
 
-                if (prevState.equals(Node.State.Dead) && newState.equals(Node.State.Connecting)) {
-                    Log.d(LOG, "DEAD -> CONNECTING: attempt to connect after dying!");
-                }
+            if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Connected)) {
+                node.enableNotification(node.getFeature(FeatureAcceleration.class));
+                node.enableNotification(node.getFeature(FeatureGyroscope.class));
+                node.enableNotification(node.getFeature(FeatureMagnetometer.class));
+                node.enableNotification(node.getFeature(FeatureBattery.class));
+            }
 
-                if (newState.equals(Node.State.Connected)) {
-                    Log.e(LOG, prevState.toString() + " -> CONNECTED : connected after dying!");
-                    switch (appVariables.getPairedAttributeName(node)) {
-                        case "helmet":
-                            Log.e(LOG,"setting helmetTag");
-                            appVariables.setHelmetTag(node);
-                            break;
-                        case "cockpit":
-                            Log.e(LOG,"settingCockpitTag");
-                            appVariables.setCockpitTag(node);
-                            break;
-                        default:
-                            Log.e(LOG,"o o! tu jest nasz problem");
-                    };
-                }
+            if (newState.equals(Node.State.Dead)) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.putExtra("isReconnecting",true);
+                startActivity(intent);
 
-                if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Connected)) {
-                    Log.e(LOG, "Notify enable before again connect: " + node.isEnableNotification(node.getFeature(FeatureAcceleration.class)));
-
-                    node.enableNotification(node.getFeature(FeatureAcceleration.class));
-                    node.enableNotification(node.getFeature(FeatureGyroscope.class));
-                    node.enableNotification(node.getFeature(FeatureMagnetometer.class));
-                    node.enableNotification(node.getFeature(FeatureBattery.class));
-
-                    Log.e(LOG, prevState.toString() + " -> CONNECTED : nice one!");
-                }
-
-                if (newState.equals(Node.State.Dead)) {
-                    Log.e(LOG, prevState.toString() + " -> DEAD : attempt to disconnect");
-
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    intent.putExtra("isReconnecting",true);
-                    startActivity(intent);
-
-                    if (appVariables.isNodePaired(node)) {
-                        if (node.equals(appVariables.getHelmetTag())) {
-                            Log.d(LOG, "Unpaired helmet because of node lost!");
-                            appVariables.setHelmetTag(null);
-                        }
-                        if (node.equals(appVariables.getCockpitTag())) {
-                            Log.d(LOG, "Unpaired cockpit because of node lost!");
-                            appVariables.setCockpitTag(null);
-                        }
-
+                if (appVariables.isNodePaired(node)) {
+                    if (node.equals(appVariables.getHelmetTag())) {
+                        Log.d(LOG, "Unpaired helmet because of node lost!");
+                        appVariables.setHelmetTag(null);
                     }
-                    Log.e(LOG, "Node lost completely");
+                    if (node.equals(appVariables.getCockpitTag())) {
+                        Log.d(LOG, "Unpaired cockpit because of node lost!");
+                        appVariables.setCockpitTag(null);
+                    }
+
                 }
+            }
 
             if ((prevState.equals(Node.State.Connected) || prevState.equals(Node.State.Connecting)) && newState.equals(Node.State.Dead)) {
-                Log.e(LOG, prevState.toString() + " -> DEAD: Node Lost!!!, calling .connect");
                 node.connect(getApplicationContext());
             }
 
-            if(prevState.equals(Node.State.Connecting) && (!newState.equals(Node.State.Connected) && !newState.equals(Node.State.Connecting))) {
-                Log.e(LOG, "Eureka");
-                node.disconnect();
-            }
-
-            if(prevState.equals(Node.State.Connecting) && newState.equals(Node.State.Disconnecting)) {
-                Log.e(LOG, "Suspicious disconnect");
-            }
-
-            if(prevState.equals(Node.State.Connected) && newState.equals(Node.State.Disconnecting)) {
-                Log.e(LOG, "Normal disconnect");
-            }
 
             if (newState.equals(Node.State.Unreachable)) {
-                Log.e(LOG, "Node out of control");
+                if (appVariables.isNodePaired(node)) {
+                    if (node.equals(appVariables.getHelmetTag())) {
+                        Log.d(LOG, "Unpaired helmet because of node unreachable!");
+                        appVariables.setHelmetTag(null);
+                        VfrApplication.setHelmetTagFriendlyName("");
+                    }
+                    if (node.equals(appVariables.getCockpitTag())) {
+                        Log.d(LOG, "Unpaired cockpit because of node unreachable!");
+                        appVariables.setCockpitTag(null);
+                        VfrApplication.setCockpitTagFriendlyName("");
+                    }
+
+                }
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("unreachableNode",VfrApplication.getPairedAttributeName(node));
                 startActivity(intent);
             }
+
+            if(prevState.equals(Node.State.Connecting) && (!newState.equals(Node.State.Connected) && !newState.equals(Node.State.Connecting)&& !newState.equals(Node.State.Unreachable))) {
+                node.disconnect();
+            }
+
         }
     };
 
