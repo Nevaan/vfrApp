@@ -43,7 +43,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                     @Override
                     public void run() {
                         stopNodeDiscovery();
-                        startScan.setText(R.string.start_button);
+                        startScan.setText(R.string.scan_for_devices);
                     }
                 });
         }
