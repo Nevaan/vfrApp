@@ -12,10 +12,15 @@ import android.widget.Button;
 import com.losek.vfrmobile.R;
 import com.losek.vfrmobile.activity.adapter.DevicesListAdapter;
 import com.losek.vfrmobile.util.VfrApplication;
+import com.st.BlueSTSDK.Config.Command;
+import com.st.BlueSTSDK.Config.Register;
+import com.st.BlueSTSDK.Config.STWeSU.RegisterDefines;
+import com.st.BlueSTSDK.ConfigControl;
 import com.st.BlueSTSDK.Features.FeatureAcceleration;
 import com.st.BlueSTSDK.Features.FeatureBattery;
 import com.st.BlueSTSDK.Features.FeatureGyroscope;
 import com.st.BlueSTSDK.Features.FeatureMagnetometer;
+import com.st.BlueSTSDK.Features.Field;
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 import com.st.BlueSTSDK.Utils.NodeScanActivity;
@@ -132,6 +137,13 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
         public void onStateChange(final Node node, Node.State newState, Node.State prevState) {
 
             if (newState.equals(Node.State.Connected)) {
+
+                RegisterDefines.RegistersName freq = RegisterDefines.RegistersName.TIMER_FREQ;
+
+                ConfigControl configService = node.getConfigRegister();
+                configService.write(new Command(RegisterDefines.RegistersName.TIMER_FREQ.getRegister(),
+                        Register.Target.PERSISTENT, 10, Field.Type.Int16));
+
                 switch (appVariables.getPairedAttributeName(node)) {
                     case "helmet":
                         Log.e(LOG,"setting helmetTag");

@@ -28,6 +28,7 @@ package com.st.BlueSTSDK;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.st.BlueSTSDK.Config.Command;
 import com.st.BlueSTSDK.Config.Register;
@@ -188,6 +189,7 @@ public class ConfigControl {
         if (mRegChar != null && mConnection != null) {
             mRegChar.setValue(cmd.ToWritePacket());
             mConnection.writeCharacteristic(mRegChar);
+            Log.e("ddd","setting val to " + cmd.toString());
         }
     }
 }
