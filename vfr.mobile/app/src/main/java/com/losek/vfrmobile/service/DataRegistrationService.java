@@ -26,7 +26,7 @@ public class DataRegistrationService extends Service {
 
     private final static String LOG = "VfrDataRegisterService";
 
-    private static Feature.FeatureLoggerListener csvLogger;
+    private static FeatureLogCSVFile csvLogger;
 
     private Feature cockpitGyroscopeFeature;
     private Feature cockpitAccelerometerFeature;
@@ -55,13 +55,17 @@ public class DataRegistrationService extends Service {
         helmetTag = VfrApplication.getHelmetTag();
 
         List<Node> nodes = new ArrayList<>();
-        if(cockpitTag != null)
+        if(cockpitTag != null) {
             nodes.add(cockpitTag);
+        }
 
-        if(helmetTag != null)
+        if(helmetTag != null) {
             nodes.add(helmetTag);
+        }
 
         csvLogger = new FeatureLogCSVFile(documentsDirectoryPath, nodes);
+        csvLogger.addNodeMapping(cockpitTag.getFriendlyName(), "cockpit");
+        csvLogger.addNodeMapping(helmetTag.getFriendlyName(), "helmet");
 
         if(cockpitTag!=null) {
             cockpitGyroscopeFeature = cockpitTag.getFeature(FeatureGyroscope.class);

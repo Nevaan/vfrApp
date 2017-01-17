@@ -136,5 +136,10 @@ public class FeatureLogCSVFile extends FeatureLogBase {
     }
 
 
+    @Override
+    public void addNodeMapping(String nodeFriendlyName, String nodePosition){
+        super.addNodeMapping(nodeFriendlyName,nodePosition);
+    }
+
 
 }

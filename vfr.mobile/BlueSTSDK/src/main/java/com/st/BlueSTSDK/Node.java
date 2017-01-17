@@ -1751,4 +1751,8 @@ public class Node{
      */
     public @Nullable ConfigControl getConfigRegister(){return mConfigControl; } //getConfigRegister
 
+    public void extendName() {
+        this.getName();
+    }
+
 }//Node

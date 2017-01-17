@@ -40,8 +40,10 @@ import java.io.FileFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Common code between the csv and db log class
@@ -78,6 +80,8 @@ public abstract class FeatureLogBase implements Feature.FeatureLoggerListener{
      * */
     protected List<Node> mNodeList;
 
+    private Map<String,String> nodeMapping;
+
     /**
      * print the file header, with the node name the raw data and the feature field
      * @param out stream where write the feature data
@@ -90,7 +94,7 @@ public abstract class FeatureLogBase implements Feature.FeatureLoggerListener{
         out.format("Nodes,");
         if (mNodeList != null)
             for(Node n: mNodeList)
-                out.format(n.getFriendlyName() + ", ");
+                out.format(n.getFriendlyName() + "(" +  nodeMapping.get(n.getFriendlyName()) + "), ");
         out.format("\n");
 
         out.format(UNIX_TIMESTAMP + " (ms)," + HOST_TIMESTAMP_COLUMN + " (ms)," + NODE_NAME_COLUMN + "," + NODE_TIMESTAMP_COLUMN + "," +
@@ -139,10 +143,16 @@ public abstract class FeatureLogBase implements Feature.FeatureLoggerListener{
         mDirectoryPath = dumpDirectoryPath;
         mStartLog = new Date();
         mNodeList = nodes;
+        nodeMapping = new HashMap<>();
         File f = new File(mDirectoryPath);
         if(!f.exists())
             f.mkdirs();
     }//FeatureLogCSVFile
+
+
+    public void addNodeMapping(String nodeFriendlyName, String nodePosition) {
+        nodeMapping.put(nodeFriendlyName,nodePosition);
+    }
 
     /**
      * create a string with the path where store the log. the name will have a timestamp for be
