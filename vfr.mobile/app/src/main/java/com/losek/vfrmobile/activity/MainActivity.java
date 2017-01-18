@@ -84,6 +84,15 @@ public class MainActivity extends AppCompatActivity implements Observer {
             getIntent().removeExtra("isReconnecting");
             getIntent().removeExtra("unreachableNode");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (checkIfRegisterServiceIsRunning()){
+            Intent serviceIntent = new Intent(this, DataRegistrationService.class);
+            stopService(serviceIntent);
+        }
 
     }
 
@@ -221,19 +230,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
             @Override
             public void run() {
 
-                boolean isDataRegistrationServiceRunning = false;
-
-                ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-                for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-                    if (DataRegistrationService.class.getName().equals(service.service.getClassName())) {
-                        isDataRegistrationServiceRunning = true;
-                    }
-                }
-
                 if (cockpitNode != null) {
                     cockpitTagTextView.setText(cockpitNode.getFriendlyName());
                     cockpitPairButton.setText(R.string.unpair_button);
-                    if (!isDataRegistrationServiceRunning) startRegistering.setEnabled(true);
+                    if (!checkIfRegisterServiceIsRunning()) startRegistering.setEnabled(true);
                     currentReads.setEnabled(true);
                 } else {
                     cockpitTagTextView.setText("Not paired yet!");
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 if (helmetNode != null) {
                     helmetTagTextView.setText(helmetNode.getFriendlyName());
                     helmetPairButton.setText(R.string.unpair_button);
-                    if(!isDataRegistrationServiceRunning) startRegistering.setEnabled(true);
+                    if(!checkIfRegisterServiceIsRunning()) startRegistering.setEnabled(true);
                     currentReads.setEnabled(true);
                 } else {
                     helmetTagTextView.setText("Not paired yet!");
@@ -258,6 +258,17 @@ public class MainActivity extends AppCompatActivity implements Observer {
         });
 
     }
+
+    private boolean checkIfRegisterServiceIsRunning(){
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (DataRegistrationService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
     @Override

@@ -141,7 +141,7 @@ public class ScanDevicesActivity extends NodeScanActivity implements AbsListView
                 RegisterDefines.RegistersName freq = RegisterDefines.RegistersName.TIMER_FREQ;
 
                 ConfigControl configService = node.getConfigRegister();
-                configService.write(new Command(RegisterDefines.RegistersName.TIMER_FREQ.getRegister(),
+                configService.write(new Command(freq.getRegister(),
                         Register.Target.PERSISTENT, 10, Field.Type.Int16));
 
                 switch (appVariables.getPairedAttributeName(node)) {
