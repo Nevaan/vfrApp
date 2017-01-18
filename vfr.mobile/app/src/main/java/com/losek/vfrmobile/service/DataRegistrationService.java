@@ -64,8 +64,8 @@ public class DataRegistrationService extends Service {
         }
 
         csvLogger = new FeatureLogCSVFile(documentsDirectoryPath, nodes);
-        csvLogger.addNodeMapping(cockpitTag.getFriendlyName(), "cockpit");
-        csvLogger.addNodeMapping(helmetTag.getFriendlyName(), "helmet");
+        if(cockpitTag != null) csvLogger.addNodeMapping(cockpitTag.getFriendlyName(), "cockpit");
+        if(helmetTag != null) csvLogger.addNodeMapping(helmetTag.getFriendlyName(), "helmet");
 
         if(cockpitTag!=null) {
             cockpitGyroscopeFeature = cockpitTag.getFeature(FeatureGyroscope.class);
